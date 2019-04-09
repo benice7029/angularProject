@@ -1,0 +1,33 @@
+<div #container class="container" >
+  <h1 #title>
+    Dashboard Manage
+  </h1>
+  <div >
+
+    <ng-container *ngIf = "dataMapping">
+        <ng-container *ngIf = "dataMapping[currentLocation].previous != ''">
+            <div class="MenuList">
+              <p class="previous" (click) = "changeFolder(dataMapping[currentLocation].previous)">
+                  <i class="far fa-folder-open"></i>../
+              </p>
+              
+            </div>
+        </ng-container>
+        <div class="MenuList" #move [ngSwitch]="data.type" *ngFor = "let data of dataMapping[currentLocation].datas;let i = index" (click) = "mouseM(i)">
+            
+            <ng-container *ngSwitchCase = "'A'">
+                <app-dashboard-folder [folderName] = "data.name" (changeFolder) = "changeFolder($event)" ></app-dashboard-folder>
+            </ng-container>
+            <ng-container *ngSwitchCase = "'B'">
+                <app-dashboard-file [fileName] = "data.name" ></app-dashboard-file>
+            </ng-container>
+          
+        </div>
+    </ng-container>
+
+  </div>
+  
+  
+  
+</div>
+

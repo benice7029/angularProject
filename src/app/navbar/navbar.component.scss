@@ -1,0 +1,30 @@
+#navBar{
+    position: fixed;
+    width: 100%;
+    background-color: gray;
+    padding: 10px;
+    &:hover{
+        opacity: 1 !important;
+    }
+    &.onTop{
+        opacity: 1;
+    } 
+    &.notOnTop{
+        opacity: 0.2;
+    }
+   
+   span{
+       font-size: 1.5rem;
+       margin: 10px;
+
+       &:hover{
+           font-weight: bold;
+           cursor: pointer;
+       }
+
+       a{
+            color: white;
+            text-decoration: none;
+       }
+   }
+}

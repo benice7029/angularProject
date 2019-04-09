@@ -1,3 +1,5 @@
-<div>First angular app !</div>
-<app-home></app-home>
-<router-outlet></router-outlet>
+<app-navbar [toTop] = "toTop"></app-navbar>
+<router-outlet #content></router-outlet>
+
+
+<button appBeautyStyle #btn = "beautyStyle">Top</button>
