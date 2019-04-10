@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild, AfterViewInit, QueryList, ElementRef, ViewContainerRef, ViewChildren } from '@angular/core';
 import { DashboardFolderComponent } from '../dashboard-folder/dashboard-folder.component';
 import { DashboardFileComponent } from '../dashboard-file/dashboard-file.component';
-import { fromEvent } from 'rxjs';
-import { map, tap, takeUntil, concatAll, mapTo} from 'rxjs/operators';
+import { fromEvent, interval } from 'rxjs';
+import { map, tap, takeUntil, concatAll, mapTo, delay} from 'rxjs/operators';
 
 @Component({
   selector: 'app-dashboard-page',
@@ -14,26 +14,28 @@ export class DashboardPageComponent implements OnInit, AfterViewInit {
   @ViewChildren('move') move: QueryList<any>;
 
   mousedown;
+  mousedownEvent: Array<any> = [];
   mouseUp;
   mouseMove;
+
 
   dataMapping;
 
   currentLocation:string;
 
-  chooseForm = 'A';
+  chooseForm = 'folder';
   mapping = new Map<string, any>(
     [
-      ['A', DashboardFolderComponent],
-      ['B', DashboardFileComponent],
+      ['folder', DashboardFolderComponent],
+      ['file', DashboardFileComponent],
     ]
   );
 
   constructor() { }
 
   ngOnInit() {
-
-    this.currentLocation = 'root'
+    console.log('on init')
+    this.currentLocation = 'Root'
 
   /*
     dataMapping 屆時需有
@@ -47,44 +49,44 @@ export class DashboardPageComponent implements OnInit, AfterViewInit {
 
     this.dataMapping = 
     {
-      root:{
+      Root:{
         previous:'',
         datas:[
                 {
-                  name:'folder1',
-                  type: 'A'
+                  name:'Folder1',
+                  type: 'folder'
                 },
                 {
-                  name:'file1',
-                  type: 'B'
+                  name:'File1',
+                  type: 'file'
                 },
                 {
-                  name:'fle2',
-                  type: 'B'
+                  name:'Fle2',
+                  type: 'file'
                 }
               ]
       },
-      folder1:{
-        previous:'root',
+      Folder1:{
+        previous:'Root',
         datas:[{
-                name:'folder2',
-                type: 'A'
+                name:'Folder2',
+                type: 'folder'
               },
               {
-                name:'folder3',
-                type: 'A'
+                name:'Folder3',
+                type: 'folder'
               },
               {
-                name:'file3',
-                type: 'B'
+                name:'File3',
+                type: 'file'
               },
               {
-                name:'fle4',
-                type: 'B'
+                name:'Fle4',
+                type: 'file'
               },
               {
-                name:'fle5',
-                type: 'B'
+                name:'Fle5',
+                type: 'file'
               }
             ]
       }
@@ -99,45 +101,74 @@ export class DashboardPageComponent implements OnInit, AfterViewInit {
     this.mouseUp = fromEvent(document,'mouseup')
     this.mouseMove = fromEvent(document, 'mousemove')
 
-
-    
+    this.mouseM()
   }
 
-  mouseM(index){
-    this.mousedown = fromEvent(this.move.toArray()[index].nativeElement,'mousedown')
-    this.mousedown
-    .pipe(
-      map(() =>
-        this.mouseMove
-        .pipe(
-          takeUntil(this.mouseUp)
+  mouseM(){
+    this.move.forEach((element,index) => {
+      fromEvent(element.nativeElement, 'mousedown')
+      .pipe(
+        map(() =>
+          this.mouseMove
+          .pipe(
+            tap(() => {
+              console.log('moving...')
+            }),
+            takeUntil(this.mouseUp)
+          )
+          .subscribe(
+            (e)=> {
+              this.move.toArray()[index].nativeElement.style.position = 'absolute';
+              this.move.toArray()[index].nativeElement.style.top = (e.clientY -18 ) + 'px'
+              this.move.toArray()[index].nativeElement.style.left = e.clientX  +10 + 'px'
+              //console.log(e)
+            }, // next
+            () => {}, // error
+            () => {   // complete
+              console.log('mouse up')
+              this.move.toArray()[index].nativeElement.classList.remove('moving')
+              this.move.toArray()[index].nativeElement.style.position = 'unset';
+            
+            }
+            
+          )
         )
-        .subscribe(
-          (e)=> {
-            this.move.toArray()[index].nativeElement.style.position = 'absolute'
-            this.move.toArray()[index].nativeElement.style.top = (e.clientY -18 ) + 'px'
-            this.move.toArray()[index].nativeElement.style.left = e.clientX -50 + 'px'
-            //console.log(e)
-          }, // next
-          () => {}, // error
-          () => {   // complete
-            this.move.toArray()[index].nativeElement.style.position = 'unset';
-           
-          }
-          
-        )
-      )
-    ).subscribe(
-      (e) => {
-        
-      }
-    );
+      ).subscribe(
+        (e) => {
+          this.move.toArray()[index].nativeElement.classList.add('moving');
+          document.getElementsByClassName
+          console.log('mouse down');
+        },
+        () => {}, // error
+        () => {   // complete
+          console.log('complete')
+        }
+      );
+    }) 
+
+    
+    
   }
 
 
   changeFolder(foldername){
-    if(this.dataMapping[foldername] != undefined)
+    if(this.dataMapping[foldername] != undefined){
       this.currentLocation = foldername;
+
+      let checkItmUpdate = setInterval(
+        () => {
+          if(this.move.length == 
+            document.getElementsByClassName('canMove').length){
+              this.mouseM();
+              clearInterval(checkItmUpdate);
+            }
+            
+        },
+        500
+      )
+      
+    }
+    
   }
 
 }

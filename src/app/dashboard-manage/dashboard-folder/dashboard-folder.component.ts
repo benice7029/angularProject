@@ -43,6 +43,9 @@ export class DashboardFolderComponent implements OnInit, AfterViewInit {
          * output 回 parent 告知往下一層folder
          */
         this.changeFolder.emit(this.folderName);
+      },
+      (error) => {
+        console.log(error);
       }
     )
     

@@ -1,7 +1,10 @@
 <div #container class="container" >
   <h1 #title>
-    Dashboard Manage
+    {{currentLocation }}
   </h1>
+  <div class="bar">
+    <i class="far fa-trash-alt"></i>
+  </div>
   <div >
 
     <ng-container *ngIf = "dataMapping">
@@ -13,12 +16,12 @@
               
             </div>
         </ng-container>
-        <div class="MenuList" #move [ngSwitch]="data.type" *ngFor = "let data of dataMapping[currentLocation].datas;let i = index" (click) = "mouseM(i)">
+        <div class="MenuList canMove {{data.type}}" #move [ngSwitch]="data.type" *ngFor = "let data of dataMapping[currentLocation].datas;let i = index" >
             
-            <ng-container *ngSwitchCase = "'A'">
+            <ng-container *ngSwitchCase = "'folder'">
                 <app-dashboard-folder [folderName] = "data.name" (changeFolder) = "changeFolder($event)" ></app-dashboard-folder>
             </ng-container>
-            <ng-container *ngSwitchCase = "'B'">
+            <ng-container *ngSwitchCase = "'file'">
                 <app-dashboard-file [fileName] = "data.name" ></app-dashboard-file>
             </ng-container>
           

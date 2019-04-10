@@ -12,6 +12,7 @@ import { AboutComponent } from './about/about.component';
 import { DashboardPageComponent } from './dashboard-manage/dashboard-page/dashboard-page.component';
 import { DashboardFileComponent } from './dashboard-manage/dashboard-file/dashboard-file.component';
 import { DashboardFolderComponent } from './dashboard-manage/dashboard-folder/dashboard-folder.component';
+import { DashboardModule } from './dashboard-manage/dashboard/dashboard.module';
 
 
 @NgModule({
@@ -21,17 +22,14 @@ import { DashboardFolderComponent } from './dashboard-manage/dashboard-folder/da
     NavbarComponent,
     ColorfulDirective,
     BeautyStyleDirective,
-    AboutComponent,
-    DashboardPageComponent,
-    DashboardFileComponent,
-    DashboardFolderComponent
+    AboutComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule
+    FormsModule,
+    DashboardModule
   ],
-  entryComponents: [DashboardFolderComponent,DashboardFileComponent],
   providers: [SharedServiceService],
   bootstrap: [AppComponent]
 })
