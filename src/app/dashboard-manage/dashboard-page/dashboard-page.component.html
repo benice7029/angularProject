@@ -3,10 +3,53 @@
     {{currentLocation }}
   </h1>
   <div class="bar">
-    <i class="far fa-trash-alt"></i>
+      <section class="example-section">
+          <mat-checkbox [(ngModel)]="checked">
+              <button class="btn">
+                  <i class="far fa-trash-alt"></i>
+              </button>
+          </mat-checkbox>
+      </section>
+      
+
+  </div>
+  <div class="btnGrp" >
+      <button mat-raised-button style="line-height: 26px;">
+        <i class="material-icons" style="font-size: 15px">
+            add_circle
+        </i>
+        <i class="material-icons" style="font-size: 15px">
+            folder_open
+        </i>
+      </button>
+      <button mat-raised-button style="line-height: 26px;">
+          <i class="material-icons" style="font-size: 15px">
+              add_circle
+          </i>
+          <i class="material-icons" style="font-size: 15px">
+              dashboard
+          </i>
+        </button>
+  </div>
+  <div id="title">
+    <div></div>
+    <div>
+        File Name
+    </div>
+    <div style="text-align: center;">
+        File Number
+    </div>
+    <div style="text-align: center;">
+        Editor
+    </div>
+    <div style="text-align: center;">
+        Established Date
+    </div>
+    <div></div>
   </div>
   <div >
 
+    
     <ng-container *ngIf = "dataMapping">
         <ng-container *ngIf = "dataMapping[currentLocation].previous != ''">
             <div class="MenuList">
@@ -19,10 +62,28 @@
         <div class="MenuList canMove {{data.type}}" #move [ngSwitch]="data.type" *ngFor = "let data of dataMapping[currentLocation].datas;let i = index" >
             
             <ng-container *ngSwitchCase = "'folder'">
+                <mat-checkbox [(ngModel)]="checked"></mat-checkbox>
                 <app-dashboard-folder [folderName] = "data.name" (changeFolder) = "changeFolder($event)" ></app-dashboard-folder>
-            </ng-container>
+                <div style="text-align: center;">{{data.fileNumber}}</div>
+                <div style="text-align: center;">{{data.editor}}</div>
+                <div style="text-align: center;">{{data.EDate}}</div>
+                <div>
+                    <button class="btn">
+                        <i class="far fa-trash-alt"></i>
+                    </button>
+                </div>
+              </ng-container>
             <ng-container *ngSwitchCase = "'file'">
+                <mat-checkbox [(ngModel)]="checked"></mat-checkbox>
                 <app-dashboard-file [fileName] = "data.name" ></app-dashboard-file>
+                <div style="text-align: center;">{{data.fileNumber}}</div>
+                <div style="text-align: center;">{{data.editor}}</div>
+                <div style="text-align: center;">{{data.EDate}}</div>
+                <div>
+                    <button class="btn">
+                        <i class="far fa-trash-alt"></i>
+                    </button>
+                </div>
             </ng-container>
           
         </div>

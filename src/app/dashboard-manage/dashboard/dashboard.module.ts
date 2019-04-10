@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { DashboardPageComponent } from '../dashboard-page/dashboard-page.component';
 import { DashboardFileComponent } from '../dashboard-file/dashboard-file.component';
 import { DashboardFolderComponent } from '../dashboard-folder/dashboard-folder.component';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -13,7 +14,8 @@ import { DashboardFolderComponent } from '../dashboard-folder/dashboard-folder.c
   exports: [DashboardPageComponent],
   entryComponents: [DashboardFolderComponent,DashboardFileComponent],
   imports: [
-    CommonModule
+    CommonModule,
+    SharedModule
   ]
 })
 export class DashboardModule { }

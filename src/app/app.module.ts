@@ -9,10 +9,9 @@ import { ColorfulDirective } from './Directives/colorful.directive';
 import { BeautyStyleDirective } from './Directives/beauty-style.directive';
 import { SharedServiceService } from './services/shared-service.service';
 import { AboutComponent } from './about/about.component';
-import { DashboardPageComponent } from './dashboard-manage/dashboard-page/dashboard-page.component';
-import { DashboardFileComponent } from './dashboard-manage/dashboard-file/dashboard-file.component';
-import { DashboardFolderComponent } from './dashboard-manage/dashboard-folder/dashboard-folder.component';
 import { DashboardModule } from './dashboard-manage/dashboard/dashboard.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { SharedModule } from './shared/shared.module';
 
 
 @NgModule({
@@ -28,7 +27,9 @@ import { DashboardModule } from './dashboard-manage/dashboard/dashboard.module';
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    DashboardModule
+    DashboardModule,
+    BrowserAnimationsModule,
+    SharedModule
   ],
   providers: [SharedServiceService],
   bootstrap: [AppComponent]

@@ -18,6 +18,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit {
   mouseUp;
   mouseMove;
 
+  checked:boolean = false;
 
   dataMapping;
 
@@ -54,15 +55,24 @@ export class DashboardPageComponent implements OnInit, AfterViewInit {
         datas:[
                 {
                   name:'Folder1',
-                  type: 'folder'
+                  type: 'folder',
+                  fileNumber: '5',
+                  editor: 'Ben',
+                  EDate: '2019/04/10'
                 },
                 {
                   name:'File1',
-                  type: 'file'
+                  type: 'file',
+                  fileNumber: '1',
+                  editor: 'Ben',
+                  EDate: '2019/04/10'
                 },
                 {
                   name:'Fle2',
-                  type: 'file'
+                  type: 'file',
+                  fileNumber: '1',
+                  editor: 'Ben',
+                  EDate: '2019/04/10'
                 }
               ]
       },
@@ -70,23 +80,38 @@ export class DashboardPageComponent implements OnInit, AfterViewInit {
         previous:'Root',
         datas:[{
                 name:'Folder2',
-                type: 'folder'
+                type: 'folder',
+                fileNumber: '7',
+                editor: 'Ben',
+                EDate: '2019/04/10'
               },
               {
                 name:'Folder3',
-                type: 'folder'
+                type: 'folder',
+                fileNumber: '6',
+                editor: 'Ben',
+                EDate: '2019/04/10'
               },
               {
                 name:'File3',
-                type: 'file'
+                type: 'file',
+                fileNumber: '1',
+                editor: 'Ben',
+                EDate: '2019/04/10'
               },
               {
                 name:'Fle4',
-                type: 'file'
+                type: 'file',
+                fileNumber: '1',
+                editor: 'Ben',
+                EDate: '2019/04/10'
               },
               {
                 name:'Fle5',
-                type: 'file'
+                type: 'file',
+                fileNumber: '1',
+                editor: 'Ben',
+                EDate: '2019/04/10'
               }
             ]
       }
@@ -119,6 +144,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit {
           .subscribe(
             (e)=> {
               this.move.toArray()[index].nativeElement.style.position = 'absolute';
+              this.move.toArray()[index].nativeElement.style.widht = '100%';
               this.move.toArray()[index].nativeElement.style.top = (e.clientY -18 ) + 'px'
               this.move.toArray()[index].nativeElement.style.left = e.clientX  +10 + 'px'
               //console.log(e)
