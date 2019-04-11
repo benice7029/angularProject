@@ -6,7 +6,9 @@
       <section class="example-section">
           <mat-checkbox [(ngModel)]="checked">
               <button class="btn">
-                  <i class="far fa-trash-alt"></i>
+                <i class="material-icons">
+                    delete_forever
+                </i>
               </button>
           </mat-checkbox>
       </section>
@@ -52,36 +54,60 @@
     
     <ng-container *ngIf = "dataMapping">
         <ng-container *ngIf = "dataMapping[currentLocation].previous != ''">
-            <div class="MenuList">
-              <p class="previous" (click) = "changeFolder(dataMapping[currentLocation].previous)">
+            <div class="MenuList previousFolder canStore">
+              <div [attr.data-targetId] = "dataMapping[currentLocation].previous"></div>
+              <p [attr.data-targetId] = "dataMapping[currentLocation].previous" class="previous" (click) = "changeFolder(dataMapping[currentLocation].previous)">
                   <i class="far fa-folder-open"></i>../
               </p>
               
             </div>
         </ng-container>
-        <div class="MenuList canMove {{data.type}}" #move [ngSwitch]="data.type" *ngFor = "let data of dataMapping[currentLocation].datas;let i = index" >
+        <div class="MenuList canMove {{data.type}}" #move 
+            [ngSwitch]="data.type" 
+            *ngFor = "let data of dataMapping[currentLocation].datas;
+                        let i = index;" 
+            [attr.data-id] = data.id
+        >
             
             <ng-container *ngSwitchCase = "'folder'">
                 <mat-checkbox [(ngModel)]="checked"></mat-checkbox>
-                <app-dashboard-folder [folderName] = "data.name" (changeFolder) = "changeFolder($event)" ></app-dashboard-folder>
-                <div style="text-align: center;">{{data.fileNumber}}</div>
-                <div style="text-align: center;">{{data.editor}}</div>
-                <div style="text-align: center;">{{data.EDate}}</div>
-                <div>
+                <app-dashboard-folder [targetId] = "data.name" [folderName] = "data.name" (changeFolder) = "changeFolder($event)" ></app-dashboard-folder>
+                <div [attr.data-targetId] = "data.name" style="text-align: center;">{{dataMapping[data.name].datas.length}}</div>
+                <div [attr.data-targetId] = "data.name" style="text-align: center;">{{data.editor}}</div>
+                <div [attr.data-targetId] = "data.name" style="text-align: center;">{{data.EDate}}</div>
+                <div [attr.data-targetId] = "data.name" >
                     <button class="btn">
-                        <i class="far fa-trash-alt"></i>
+                        <i class="material-icons">
+                            save
+                        </i>
+                    </button>
+                </div>
+                <div [attr.data-targetId] = "data.name">
+                    <button class="btn">
+                        <i class="material-icons">
+                            delete_forever
+                        </i>
                     </button>
                 </div>
               </ng-container>
             <ng-container *ngSwitchCase = "'file'">
                 <mat-checkbox [(ngModel)]="checked"></mat-checkbox>
                 <app-dashboard-file [fileName] = "data.name" ></app-dashboard-file>
-                <div style="text-align: center;">{{data.fileNumber}}</div>
+                <div style="text-align: center;">1</div>
                 <div style="text-align: center;">{{data.editor}}</div>
                 <div style="text-align: center;">{{data.EDate}}</div>
                 <div>
                     <button class="btn">
-                        <i class="far fa-trash-alt"></i>
+                        <i class="material-icons">
+                            save
+                        </i>
+                    </button>
+                </div>
+                <div>
+                    <button class="btn">
+                        <i class="material-icons">
+                            delete_forever
+                        </i>
                     </button>
                 </div>
             </ng-container>

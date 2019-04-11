@@ -12,6 +12,8 @@ export class DashboardFolderComponent implements OnInit, AfterViewInit {
 
   @Input('folderName') folderName:string;
 
+  @Input('targetId') targetId:string
+
   @ViewChild('f') private folder: ElementRef;
 
   @Output()
@@ -34,7 +36,7 @@ export class DashboardFolderComponent implements OnInit, AfterViewInit {
     fromEvent(this.folder.nativeElement,'mousedown')
     .pipe(
       merge(fromEvent(this.folder.nativeElement,'mouseup')),
-      bufferTime(500),
+      bufferTime(1200),
       filter(arr => arr.length >= 2)
     )
     .subscribe(

@@ -9,6 +9,7 @@ export class DashboardFileComponent implements OnInit {
 
   @Input('fileName') fileName:string;
 
+
   constructor() { }
 
   ngOnInit() {

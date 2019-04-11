@@ -1,4 +1,9 @@
-<p #f >
-  <i class="far fa-folder"></i>
+<p #f [attr.data-targetId] = "targetId">
+  <i class="material-icons" style="font-size: 15px">
+    folder_open
+  </i>
   {{folderName}}
+  <button class="btn">
+      <i class="material-icons">edit</i>
+  </button>
 </p>

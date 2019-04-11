@@ -2,4 +2,18 @@ p{
     user-select: none;
     -webkit-user-drag: auto;
     margin: 0;
+    .btn{
+        border: 0;
+        font-size: 20px;
+        margin-left: 5px;
+        background-color: transparent;
+        &:hover{
+            background-color: rgb(238, 238, 238);
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        i{
+            font-size: 18px;
+        }
+    }
 }

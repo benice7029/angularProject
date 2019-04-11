@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild, AfterViewInit, QueryList, ElementRef, ViewContainerRef, ViewChildren } from '@angular/core';
 import { DashboardFolderComponent } from '../dashboard-folder/dashboard-folder.component';
 import { DashboardFileComponent } from '../dashboard-file/dashboard-file.component';
-import { fromEvent, interval } from 'rxjs';
-import { map, tap, takeUntil, concatAll, mapTo, delay} from 'rxjs/operators';
+import { fromEvent, interval, zip, of } from 'rxjs';
+import { map, tap, takeUntil, concatAll, mapTo, delay, takeLast} from 'rxjs/operators';
 
 @Component({
   selector: 'app-dashboard-page',
@@ -13,18 +13,21 @@ export class DashboardPageComponent implements OnInit, AfterViewInit {
   
   @ViewChildren('move') move: QueryList<any>;
 
-  mousedown;
-  mousedownEvent: Array<any> = [];
-  mouseUp;
-  mouseMove;
+  //mouse move until mouse up: observable
+  mouseUp$;
+  //mouse down then mouse move: observable
+  mouseMove$;
+  //move file: observable
+  moveFile$;
+
+  allMoveingElement$: Array<any> = [];
 
   checked:boolean = false;
 
-  dataMapping;
+  dataMapping;// folder and dashboard data
 
   currentLocation:string;
 
-  chooseForm = 'folder';
   mapping = new Map<string, any>(
     [
       ['folder', DashboardFolderComponent],
@@ -54,6 +57,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit {
         previous:'',
         datas:[
                 {
+                  id:'1',
                   name:'Folder1',
                   type: 'folder',
                   fileNumber: '5',
@@ -61,6 +65,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit {
                   EDate: '2019/04/10'
                 },
                 {
+                  id:'2',
                   name:'File1',
                   type: 'file',
                   fileNumber: '1',
@@ -68,7 +73,32 @@ export class DashboardPageComponent implements OnInit, AfterViewInit {
                   EDate: '2019/04/10'
                 },
                 {
+                  id:'3',
                   name:'Fle2',
+                  type: 'file',
+                  fileNumber: '1',
+                  editor: 'Ben',
+                  EDate: '2019/04/10'
+                },
+                {
+                  id:'9',
+                  name:'Fle98',
+                  type: 'file',
+                  fileNumber: '1',
+                  editor: 'Ben',
+                  EDate: '2019/04/10'
+                },
+                {
+                  id:'10',
+                  name:'Fle14',
+                  type: 'file',
+                  fileNumber: '1',
+                  editor: 'Ben',
+                  EDate: '2019/04/10'
+                },
+                {
+                  id:'11',
+                  name:'Fle233',
                   type: 'file',
                   fileNumber: '1',
                   editor: 'Ben',
@@ -79,6 +109,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit {
       Folder1:{
         previous:'Root',
         datas:[{
+                id:'4',
                 name:'Folder2',
                 type: 'folder',
                 fileNumber: '7',
@@ -86,6 +117,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit {
                 EDate: '2019/04/10'
               },
               {
+                id:'5',
                 name:'Folder3',
                 type: 'folder',
                 fileNumber: '6',
@@ -93,6 +125,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit {
                 EDate: '2019/04/10'
               },
               {
+                id:'6',
                 name:'File3',
                 type: 'file',
                 fileNumber: '1',
@@ -100,6 +133,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit {
                 EDate: '2019/04/10'
               },
               {
+                id:'7',
                 name:'Fle4',
                 type: 'file',
                 fileNumber: '1',
@@ -107,6 +141,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit {
                 EDate: '2019/04/10'
               },
               {
+                id:'8',
                 name:'Fle5',
                 type: 'file',
                 fileNumber: '1',
@@ -114,6 +149,14 @@ export class DashboardPageComponent implements OnInit, AfterViewInit {
                 EDate: '2019/04/10'
               }
             ]
+      },
+      Folder2:{
+        previous:'Folder1',
+        datas:[]
+      },
+      Folder3:{
+        previous:'Folder1',
+        datas:[]
       }
 
     }
@@ -123,53 +166,184 @@ export class DashboardPageComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
 
-    this.mouseUp = fromEvent(document,'mouseup')
-    this.mouseMove = fromEvent(document, 'mousemove')
+    this.mouseUp$ = fromEvent(document,'mouseup')
+    this.mouseMove$ = fromEvent(document, 'mousemove')
 
     this.mouseM()
   }
 
   mouseM(){
-    this.move.forEach((element,index) => {
-      fromEvent(element.nativeElement, 'mousedown')
-      .pipe(
-        map(() =>
-          this.mouseMove
-          .pipe(
-            tap(() => {
-              console.log('moving...')
-            }),
-            takeUntil(this.mouseUp)
-          )
-          .subscribe(
-            (e)=> {
-              this.move.toArray()[index].nativeElement.style.position = 'absolute';
-              this.move.toArray()[index].nativeElement.style.widht = '100%';
-              this.move.toArray()[index].nativeElement.style.top = (e.clientY -18 ) + 'px'
-              this.move.toArray()[index].nativeElement.style.left = e.clientX  +10 + 'px'
-              //console.log(e)
-            }, // next
-            () => {}, // error
-            () => {   // complete
-              console.log('mouse up')
-              this.move.toArray()[index].nativeElement.classList.remove('moving')
-              this.move.toArray()[index].nativeElement.style.position = 'unset';
-            
-            }
-            
-          )
+
+    /**
+     * when calling mouseM function,
+     * it will create new observable be subscribed.
+     * It's important to preventing fromEvent observable 
+     * which detect moving element repeat subscribe.
+     */
+
+    /**
+     * If allMoveingElement$ is not empty,it has observable
+     * unsubscribed.
+    */
+    if(this.allMoveingElement$.length > 0){
+        this.allMoveingElement$.forEach(
+          (o) => {
+            o.unsubscribe();
+          }
         )
-      ).subscribe(
-        (e) => {
-          this.move.toArray()[index].nativeElement.classList.add('moving');
-          document.getElementsByClassName
-          console.log('mouse down');
-        },
-        () => {}, // error
-        () => {   // complete
-          console.log('complete')
-        }
-      );
+        this.allMoveingElement$ = [];
+    }
+
+    this.move.forEach((element,index) => {
+      this.allMoveingElement$.push(
+        fromEvent(element.nativeElement, 'mousedown')
+        .pipe(
+          map(() =>
+            this.mouseMove$
+            .pipe(
+              tap(() => {
+                console.log('moving...')
+              }),
+              takeUntil(this.mouseUp$)
+            )
+            .subscribe(
+              (e)=> {
+                if(this.move.toArray()[index] != undefined){
+                  this.move.toArray()[index].nativeElement.style.position = 'absolute';
+                  this.move.toArray()[index].nativeElement.style.width = '75vw' ;
+                  this.move.toArray()[index].nativeElement.style.top = (e.clientY -18 ) + 'px'
+                  this.move.toArray()[index].nativeElement.style.left = e.clientX  +10 + 'px'
+                  
+                }
+                
+                
+                //console.log(e)
+              }, // next
+              () => {}, // error
+              () => {   // complete
+                console.log('mouse up')
+
+
+                if(this.move.toArray()[index] != undefined){
+                  this.move.toArray()[index].nativeElement.classList.remove('moving')
+                  this.move.toArray()[index].nativeElement.style.position = 'unset';
+                  this.move.toArray()[index].nativeElement.style.width = 'unset' ;
+                }
+                
+                Array.from(document.getElementsByClassName('canStore'))
+                .forEach((el) => {
+                  if(el.classList.contains('previousFolder'))
+                    console.log('');
+                  else
+                    el.classList.remove('canStore');
+                });
+
+                
+                
+                
+              }
+              
+            )
+          )
+        ).subscribe(
+          (e) => {
+            if(this.move.toArray()[index] != undefined)
+              this.move.toArray()[index].nativeElement.classList.add('moving');
+            
+            Array.from(document.getElementsByClassName('folder'))
+            .forEach((el) => {
+              // Do stuff here
+              if(!el.classList.contains('moving'))
+                el.classList.add('canStore');
+            });
+
+            /**
+             * prevent multiple subscribe the observable 
+             * which match the condition
+             * but execute subscribe in previous moving
+             * 
+             */
+
+            if(this.moveFile$ != null)
+              this.moveFile$.unsubscribe()
+
+            /**
+             * when mouse up on element including class 'canStore'
+             * and zip with current mouse down element
+             * 
+             * subscribe can handle move to folder
+             * use attr data-id to get dashboard / folder 's id
+             * update dataMapping can move dashboard / folder
+             */
+            this.moveFile$ = 
+            zip(
+              fromEvent(document.getElementsByClassName('canStore'),'mouseup'),
+              of(this.move.toArray()[index] != undefined ? this.move.toArray()[index].nativeElement : null)
+              )
+            
+            .subscribe(
+                (v) => {
+                    console.log(v)
+                    this.dataMapping[this.currentLocation]['datas']
+                    .forEach((element,ind) => {
+                      if(element.id == v[1].dataset.id){
+
+                        /**
+                         * push current dashboard / folder 
+                         * to target folder
+                         * 
+                         * remove current dashboard / folder
+                         * from current folder
+                         */
+
+                        let target = v[0].target as HTMLTextAreaElement;
+                        if(element.type == 'folder'){
+                          this.dataMapping[element.name].previous 
+                          = target.dataset.targetid
+                          this.dataMapping[target.dataset.targetid]['datas']
+                          = [element,...this.dataMapping[target.dataset.targetid]['datas']]
+                        }else{
+                          this.dataMapping[target.dataset.targetid]['datas']
+                          .push(element)
+                        }
+
+                        
+
+                        this.dataMapping[this.currentLocation]['datas']
+                        .splice(ind, 1)
+                        
+                        console.log(this.dataMapping)
+
+                      }
+                      
+                    })
+                    /**
+                     * call changeFolder function because of element change
+                     * fromevent observable binding on #move be removed possibly
+                     * update the fromevent observable by calling changeFolder
+                     */
+                    
+                    this.moveFile$.unsubscribe();
+                    this.changeFolder(this.currentLocation);
+                },
+                (error) => {
+                  
+                },
+                () => {
+                  
+                  console.log('complete');
+                }
+            )
+
+            console.log('mouse down');
+          },
+          () => {}, // error
+          () => {   // complete
+            console.log('complete')
+          }
+        )
+      )
+      ;
     }) 
 
     
@@ -178,11 +352,13 @@ export class DashboardPageComponent implements OnInit, AfterViewInit {
 
 
   changeFolder(foldername){
+    console.log('change folder: '+foldername)
     if(this.dataMapping[foldername] != undefined){
       this.currentLocation = foldername;
 
       let checkItmUpdate = setInterval(
         () => {
+          console.log('check.....')
           if(this.move.length == 
             document.getElementsByClassName('canMove').length){
               this.mouseM();
@@ -190,11 +366,13 @@ export class DashboardPageComponent implements OnInit, AfterViewInit {
             }
             
         },
-        500
+        100
       )
       
     }
     
   }
+
+
 
 }
