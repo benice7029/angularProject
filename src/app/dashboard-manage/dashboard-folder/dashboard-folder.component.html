@@ -1,9 +1,36 @@
+<!-- [attr.data-targetId] = "targetId" 
+     It's a identification for moving file or folder to target folder   -->
 <p #f [attr.data-targetId] = "targetId">
-  <i class="material-icons" style="font-size: 15px">
+    <button [attr.data-targetId] = "targetId" *ngIf = "!canEdit" class="btn" (click) = "edit()">
+        <i [attr.data-targetId] = "targetId" class="material-icons">edit</i>
+    </button>
+    <button [attr.data-targetId] = "targetId" *ngIf = "canEdit" class="btn" (click) = "edit()">
+      <i [attr.data-targetId] = "targetId" class="material-icons">
+        save
+      </i>
+    </button>
+  <i [attr.data-targetId] = "targetId" class="material-icons" style="font-size: 15px">
     folder_open
   </i>
-  {{folderName}}
-  <button class="btn">
-      <i class="material-icons">edit</i>
-  </button>
+  <span [attr.data-targetId] = "targetId" *ngIf = "!canEdit">{{folderName}}</span>
+
+  <mat-form-field *ngIf = "canEdit" class="example-full-width" 
+    [style.padding] = "'0px 5px'" 
+    [style.fontSize] = "'10px'"
+    [style.width] = "'60%'">
+    <input matInput placeholder="Folder Name" [(ngModel)] = "folderName" [formControl]="folderNameFormControl">
+    <button mat-button *ngIf="folderName" matSuffix mat-icon-button aria-label="Clear" (click)="folderName=''">
+      <mat-icon>close</mat-icon>
+    </button>
+    <mat-error *ngIf="folderNameFormControl.hasError('folderName') && !folderNameFormControl.hasError('required')">
+      Please enter a folder name
+    </mat-error>
+    <mat-error *ngIf="folderNameFormControl.hasError('required')">
+      Folder name is <strong>required</strong>
+    </mat-error>
+  </mat-form-field>
+  
+  
 </p>
+
+

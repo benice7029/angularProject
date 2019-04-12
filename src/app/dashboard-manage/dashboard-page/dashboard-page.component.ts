@@ -1,15 +1,17 @@
-import { Component, OnInit, ViewChild, AfterViewInit, QueryList, ElementRef, ViewContainerRef, ViewChildren } from '@angular/core';
+import { Component, OnInit,  AfterViewInit, QueryList, ViewChildren, OnDestroy } from '@angular/core';
 import { DashboardFolderComponent } from '../dashboard-folder/dashboard-folder.component';
 import { DashboardFileComponent } from '../dashboard-file/dashboard-file.component';
-import { fromEvent, interval, zip, of } from 'rxjs';
-import { map, tap, takeUntil, concatAll, mapTo, delay, takeLast} from 'rxjs/operators';
+import { fromEvent, zip, of } from 'rxjs';
+import { map, tap, takeUntil} from 'rxjs/operators';
+import { Validators, FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-dashboard-page',
   templateUrl: './dashboard-page.component.html',
   styleUrls: ['./dashboard-page.component.scss']
 })
-export class DashboardPageComponent implements OnInit, AfterViewInit {
+export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy {
+  
   
   @ViewChildren('move') move: QueryList<any>;
 
@@ -28,6 +30,63 @@ export class DashboardPageComponent implements OnInit, AfterViewInit {
 
   currentLocation:string;
 
+  /**
+   * make below two-way databinding with add form
+   * become component?
+   * 
+   * reuse in dashboard-folder, dashboard-file for edit
+   */
+
+   
+
+  folderNameFormControl = new FormControl('', [
+    Validators.required
+  ]);
+  fileNameFormControl = new FormControl('', [
+    Validators.required
+  ]);
+
+  //for testing...
+  id:number = 99;
+
+  save(newElement,type){
+
+    /**
+     * Http remind!
+     * 
+     * should send request and get result from backend
+     * for value of id
+     */
+
+    if(type == 'folder'){
+      this.dataMapping[newElement] = 
+      {
+        previous:this.currentLocation,
+        datas:[]
+
+      }
+    }
+
+    this.dataMapping[this.currentLocation]['datas']
+    .push(
+      {
+        id:this.id ++ + '',
+        name:newElement,
+        type: type,
+        fileNumber: type == 'folder' ? '0' : '1',
+        editor: 'Ben',
+        EDate: '2019/04/10'
+      }
+    )
+    this.changeFolder(this.currentLocation);
+  }
+
+  deleteElement(element){
+
+  }
+
+  
+
   mapping = new Map<string, any>(
     [
       ['folder', DashboardFolderComponent],
@@ -36,6 +95,13 @@ export class DashboardPageComponent implements OnInit, AfterViewInit {
   );
 
   constructor() { }
+
+  ngOnDestroy(): void {
+    /**
+     * Notice:
+     * check if all of observalbe in this component be unsubscribed
+     */
+  }
 
   ngOnInit() {
     console.log('on init')
@@ -74,7 +140,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit {
                 },
                 {
                   id:'3',
-                  name:'Fle2',
+                  name:'File2',
                   type: 'file',
                   fileNumber: '1',
                   editor: 'Ben',
@@ -82,7 +148,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit {
                 },
                 {
                   id:'9',
-                  name:'Fle98',
+                  name:'File98',
                   type: 'file',
                   fileNumber: '1',
                   editor: 'Ben',
@@ -90,7 +156,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit {
                 },
                 {
                   id:'10',
-                  name:'Fle14',
+                  name:'File14',
                   type: 'file',
                   fileNumber: '1',
                   editor: 'Ben',
@@ -98,7 +164,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit {
                 },
                 {
                   id:'11',
-                  name:'Fle233',
+                  name:'File233',
                   type: 'file',
                   fileNumber: '1',
                   editor: 'Ben',
@@ -134,7 +200,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit {
               },
               {
                 id:'7',
-                name:'Fle4',
+                name:'File4',
                 type: 'file',
                 fileNumber: '1',
                 editor: 'Ben',
@@ -142,7 +208,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit {
               },
               {
                 id:'8',
-                name:'Fle5',
+                name:'File5',
                 type: 'file',
                 fileNumber: '1',
                 editor: 'Ben',
@@ -297,6 +363,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit {
                          */
 
                         let target = v[0].target as HTMLTextAreaElement;
+                        
                         if(element.type == 'folder'){
                           this.dataMapping[element.name].previous 
                           = target.dataset.targetid

@@ -8,13 +8,14 @@
     .bar{
         font-size: 1.3rem;
         padding: 10px 10px;
-        background-color: #dddddd;
+        background-color: #efefef;
         border-radius: 5px;
         border: 1px solid silver;
         .btn{
             border: 0;
+            background-color: transparent;
             &:hover{
-                background-color: rgb(238, 238, 238);
+                background-color: rgb(209, 209, 209);
                 border-radius: 5px;
                 cursor: pointer;
             }
@@ -25,6 +26,7 @@
         button{
             margin-right: 5px;
         }
+        
     }
 
     #title{
@@ -82,3 +84,19 @@
     }
 }
 
+.saveButton{
+    border: 0;
+    font-size: 20px;
+    margin-left: 5px;
+    background-color: transparent;
+    border-radius: 5px;
+    position: absolute;
+    right: 10px;
+    top: 15px;
+    cursor: pointer;
+    &:hover{
+        background-color: rgb(238, 238, 238);
+        border-radius: 5px;
+        cursor: pointer;
+    }
+}

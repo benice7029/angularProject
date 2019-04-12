@@ -2,6 +2,11 @@ p{
     user-select: none;
     -webkit-user-drag: auto;
     margin: 0;
+    span{
+        width: 80%;
+        padding: 0 5px;
+        overflow-wrap: break-word;
+    }
     .btn{
         border: 0;
         font-size: 20px;

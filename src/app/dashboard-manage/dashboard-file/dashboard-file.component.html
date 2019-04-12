@@ -1,9 +1,30 @@
 <p >
+    <button *ngIf = "!canEdit" class="btn" (click) = "edit()">
+        <i class="material-icons">edit</i>
+      </button>
+      <button *ngIf = "canEdit" class="btn" (click) = "edit()">
+        <i class="material-icons">
+          save
+        </i>
+      </button>
   <i class="material-icons" style="font-size: 15px">
     dashboard
   </i>
-  {{fileName}}
-  <button class="btn">
-      <i class="material-icons">edit</i>
-  </button>
+  <span *ngIf = "!canEdit">{{fileName}}</span>
+  <mat-form-field *ngIf = "canEdit"  
+    [style.padding] = "'0px 5px'" 
+    [style.fontSize] = "'10px'"
+    [style.width] = "'60%'">
+    <input matInput placeholder="File Name" [(ngModel)] = "fileName" [formControl]="fileNameFormControl">
+    <button mat-button *ngIf="fileName" matSuffix mat-icon-button aria-label="Clear" (click)="fileName=''">
+      <mat-icon>close</mat-icon>
+    </button>
+    <mat-error *ngIf="fileNameFormControl.hasError('email') && !fileNameFormControl.hasError('required')">
+      Please enter a file name
+    </mat-error>
+    <mat-error *ngIf="fileNameFormControl.hasError('required')">
+      File name is <strong>required</strong>
+    </mat-error>
+  </mat-form-field>
+  
 </p>
