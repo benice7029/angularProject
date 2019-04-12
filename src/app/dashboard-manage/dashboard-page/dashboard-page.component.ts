@@ -81,8 +81,21 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
     this.changeFolder(this.currentLocation);
   }
 
-  deleteElement(element){
+  deleteElement(element,type){
 
+    if(type == 'folder'){
+      
+    }
+
+    this.dataMapping[this.currentLocation]['datas']
+    .forEach((el,ind) => {
+        if(element == el.name){
+          this.dataMapping[this.currentLocation]['datas']
+          .splice(ind, 1)
+
+        }
+                      
+    })
   }
 
   
