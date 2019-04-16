@@ -1,5 +1,5 @@
 <p >
-    <button *ngIf = "!canEdit" class="btn" (click) = "edit()">
+      <button [disabled] = "editing"  *ngIf = "!canEdit" class="btn" (click) = "edit()">
         <i class="material-icons">edit</i>
       </button>
       <button *ngIf = "canEdit" class="btn" (click) = "edit()">

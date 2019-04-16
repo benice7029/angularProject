@@ -8,9 +8,9 @@
     .bar{
         font-size: 1.3rem;
         padding: 10px 10px;
-        background-color: #efefef;
-        border-radius: 5px;
-        border: 1px solid silver;
+        // background-color: #efefef;
+        // border-radius: 5px;
+        // border: 1px solid silver;
         .btn{
             border: 0;
             background-color: transparent;
@@ -21,38 +21,135 @@
             }
         }
     }
-    .btnGrp{
-        padding: 10px 0px;
+    .locationPath{
+        padding: 5px 4px;
+        border-left: 1px solid #d6d6d6;
+        border-right: 1px solid #d6d6d6;
+        background-color: rgb(230, 230, 230);
         button{
-            margin-right: 5px;
-        }
-        
-    }
-
-    #title{
-        padding: 10px 10px;
-        display: grid;
-        grid-template-columns: 34px 30% 15% 20% auto 34px 34px;
-        border-bottom: 1px solid #d6d6d6;
-    }
-
-    .MenuList{
-        font-size: 20px;
-        padding: 5px 5px;
-        display: grid;
-        grid-template-columns: 34px 30% 15% 20% auto 34px 34px;
-        .btn{
-            border: 0;
-            font-size: 20px;
-            margin-left: 5px;
-            background-color: transparent;
-            &:hover{
-                background-color: rgb(238, 238, 238);
-                border-radius: 5px;
+            background-color:transparent;
+            border: none;
+            i{
+                font-size:15px
+            }
+            span{
+                vertical-align: top;
+                border-bottom: 1px solid gray;
                 cursor: pointer;
             }
         }
     }
+
+
+    .btnGrp{
+        border-right: 1px solid #d6d6d6;
+        border-left: 1px solid #d6d6d6;
+        padding-left: 10px;
+        .title{
+            display: inline-block;
+            vertical-align: top;
+            padding-left: 10px;
+        }
+        div{
+            display: inline-block;
+            
+        }
+
+        form{
+            position: absolute;
+            top:20px;
+            right: 0;
+        }
+        
+        
+    }
+    .content{
+        min-height:150px;
+        border: 1px solid #dadada;    
+        border-top: none;
+        #title{
+            padding: 10px 10px;
+            display: grid;
+            grid-template-columns: 60px 30% 15% 20% auto 34px 34px;
+            border-bottom: 1px solid #d6d6d6;
+            .btn{
+                border: 0;
+                background-color: transparent;
+                &:hover{
+                    background-color: rgb(209, 209, 209);
+                    border-radius: 5px;
+                    cursor: pointer;
+                }
+            }
+
+            #column_filename{
+                padding-top: 5px;
+                text-align:left; 
+                padding-left: 11px;
+            }
+            .column_name{
+                padding: 5px 0px;
+                text-align: center
+            }
+        }
+
+        #fileContainer{
+            height: 50vh;
+            overflow-y: scroll;
+            
+            &::-webkit-scrollbar-track
+            {
+                
+                background-color: white;
+            }
+            &::-webkit-scrollbar
+            {
+                width: 6px;
+                background-color: white;
+            }
+            &::-webkit-scrollbar-thumb
+            {
+                background-color: gray;
+            }
+
+            .MenuList{
+                font-size: 20px;
+                padding: 5px 10px;
+                display: grid;
+                grid-template-columns: 60px 30% 15% 20% auto 34px 34px;
+                user-select: none;
+                -webkit-user-drag: auto;
+                &:hover{
+                    box-shadow: 0px 1px rgb(189, 189, 189);
+                    border: 1px solid rgb(238, 238, 238);
+                    border-radius: 3px;
+                    cursor: pointer;
+                }
+                p{
+                    margin: 0 ;
+                    i{
+                        margin-left: 11px;
+                        margin-right: 5px;
+                    }
+                }
+                .btn{
+                    border: 0;
+                    font-size: 20px;
+                    margin-left: 5px;
+                    background-color: transparent;
+                    &:hover{
+                        background-color: rgb(238, 238, 238);
+                        border-radius: 5px;
+                        cursor: pointer;
+                    }
+                }
+            }
+        }
+
+    }
+
+    
+    
 
     .moving{
         border: 1px solid gray;
@@ -69,19 +166,7 @@
         }
     }
 
-    .MenuList{
-        p{
-            margin: 0 ;
-        }
-        
-        padding: 5px 10px;
-        &:hover{
-            box-shadow: 0px 1px rgb(189, 189, 189);
-            border: 1px solid rgb(238, 238, 238);
-            border-radius: 3px;
-            cursor: pointer;
-        }
-    }
+    
 }
 
 .saveButton{
@@ -100,3 +185,4 @@
         cursor: pointer;
     }
 }
+

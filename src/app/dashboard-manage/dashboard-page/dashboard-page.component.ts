@@ -1,9 +1,20 @@
 import { Component, OnInit,  AfterViewInit, QueryList, ViewChildren, OnDestroy } from '@angular/core';
 import { DashboardFolderComponent } from '../dashboard-folder/dashboard-folder.component';
 import { DashboardFileComponent } from '../dashboard-file/dashboard-file.component';
-import { fromEvent, zip, of } from 'rxjs';
-import { map, tap, takeUntil} from 'rxjs/operators';
-import { Validators, FormControl } from '@angular/forms';
+import { fromEvent, zip, of, Observable } from 'rxjs';
+import { map, tap, takeUntil, bufferTime, filter, startWith} from 'rxjs/operators';
+import { Validators, FormControl, FormBuilder, FormGroup } from '@angular/forms';
+
+export interface FileType {
+  type: string;
+  files: string[];
+}
+
+export const _filter = (opt: string[], value: string): string[] => {
+  const filterValue = value.toLowerCase();
+
+  return opt.filter(item => item.toLowerCase().indexOf(filterValue) === 0);
+};
 
 @Component({
   selector: 'app-dashboard-page',
@@ -12,6 +23,34 @@ import { Validators, FormControl } from '@angular/forms';
 })
 export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy {
   
+
+  fileForm: FormGroup = this.fb.group({
+    fileGroup: '',
+  });
+
+  @ViewChildren('checkbox') checkboxs : QueryList<any>;
+
+  checked:boolean = false;
+
+  checkedNotAll:boolean = false;
+
+  checkBoxGroup: any;
+
+
+  /**
+   * for auto complete's select option data
+   */
+  fileGroups: FileType[] = [{
+    type: 'Folder',
+    files: ['Folder1', 'Folder2', 'Folder3']
+    },
+    {
+      type: 'File',
+      files: ['file1', 'file2', 'file3']
+    }
+  ];
+
+  fileGroupOptions: Observable<FileType[]>;
   
   @ViewChildren('move') move: QueryList<any>;
 
@@ -24,11 +63,15 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
 
   allMoveingElement$: Array<any> = [];
 
-  checked:boolean = false;
+  
 
   dataMapping;// folder and dashboard data
 
   currentLocation:string;
+
+  currentLocationArray:Array<string>;//location path  
+
+  editing:boolean;
 
   /**
    * make below two-way databinding with add form
@@ -83,9 +126,14 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
 
   deleteElement(element,type){
 
+    /**
+     * should send http delete dashboard / folder
+     */
+
     if(type == 'folder'){
-      
+      delete this.dataMapping[element];
     }
+    
 
     this.dataMapping[this.currentLocation]['datas']
     .forEach((el,ind) => {
@@ -96,6 +144,8 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
         }
                       
     })
+    console.log(this.dataMapping)
+    this.changeFolder(this.currentLocation);
   }
 
   
@@ -107,19 +157,38 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
     ]
   );
 
-  constructor() { }
+  constructor( private fb: FormBuilder ) { }
 
   ngOnDestroy(): void {
     /**
      * Notice:
      * check if all of observalbe in this component be unsubscribed
      */
+    if(this.allMoveingElement$.length > 0){
+      this.allMoveingElement$.forEach(
+        (o) => {
+          o.unsubscribe();
+        }
+      )
+      this.allMoveingElement$ = [];
+    }
+
+    if(this.moveFile$ != undefined)
+      this.moveFile$.unsubscribe();
+
   }
 
   ngOnInit() {
     console.log('on init')
     this.currentLocation = 'Root'
 
+    this.currentLocationArray = new Array();
+
+    this.fileGroupOptions = this.fileForm.get('fileGroup')!.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => this._filterGroup(value))
+    );
   /*
     dataMapping 屆時需有
     檔案名稱 name
@@ -239,8 +308,26 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
       }
 
     }
+
+    this.checkBoxGroup = {};
+    for(let k in this.dataMapping){
+      this.dataMapping[k].datas.forEach((value) => {
+        this.checkBoxGroup[value.id] = false;
+      })
+      
+    }
     
       
+  }
+
+  private _filterGroup(value: string): FileType[] {
+    if (value) {
+      return this.fileGroups
+        .map(group => ({type: group.type, files: _filter(group.files, value)}))
+        .filter(group => group.files.length > 0);
+    }
+
+    return this.fileGroups;
   }
 
   ngAfterViewInit(): void {
@@ -273,13 +360,17 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
         this.allMoveingElement$ = [];
     }
 
+    
+
     this.move.forEach((element,index) => {
       this.allMoveingElement$.push(
         fromEvent(element.nativeElement, 'mousedown')
         .pipe(
+          
           map(() =>
             this.mouseMove$
             .pipe(
+              
               tap(() => {
                 console.log('moving...')
               }),
@@ -290,7 +381,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
                 if(this.move.toArray()[index] != undefined){
                   this.move.toArray()[index].nativeElement.style.position = 'absolute';
                   this.move.toArray()[index].nativeElement.style.width = '75vw' ;
-                  this.move.toArray()[index].nativeElement.style.top = (e.clientY -18 ) + 'px'
+                  this.move.toArray()[index].nativeElement.style.top = (e.clientY -130 ) + 'px'
                   this.move.toArray()[index].nativeElement.style.left = e.clientX  +10 + 'px'
                   
                 }
@@ -362,6 +453,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
             
             .subscribe(
                 (v) => {
+                    console.log('start move file...')
                     console.log(v)
                     this.dataMapping[this.currentLocation]['datas']
                     .forEach((element,ind) => {
@@ -432,6 +524,16 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
 
 
   changeFolder(foldername){
+    this.moveFile$.unsubscribe();
+    if(foldername != 'Root'){
+      if(this.currentLocationArray.includes(foldername))
+        this.currentLocationArray = this.currentLocationArray.slice(0,this.currentLocationArray.indexOf(foldername) + 1);
+      else
+        this.currentLocationArray.push(foldername);
+    }else
+      this.currentLocationArray = new Array();
+    console.log(this.dataMapping)
+    console.log(this.currentLocationArray)
     console.log('change folder: '+foldername)
     if(this.dataMapping[foldername] != undefined){
       this.currentLocation = foldername;
@@ -453,6 +555,96 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
     
   }
 
+  /**
+   * when folder or file is editing, 
+   * make sure to prevent every action be emited
+   */
+
+  preventMoveing(v){
+
+    //when false, resubscribe observable
+    if(this.editing){
+
+      /**
+       * change dataMapping value
+       */
+      console.log(this.dataMapping)
+      if(v.type == 'folder'){
+        this.dataMapping[this.currentLocation].datas.forEach(ele => {
+          if(ele.id == v.id){
+            this.dataMapping[v.name] = 
+            this.dataMapping[ele.name];
+            
+            for(let key in this.dataMapping){
+              console.log(key)
+              if(this.dataMapping[key].previous == ele.name)
+                this.dataMapping[key].previous = v.name;
+            }
+            delete this.dataMapping[ele.name];
+            ele.name = v.name;
+            
+            
+          }
+        })
+
+        
+
+
+
+      }else{
+        this.dataMapping[this.currentLocation].datas.forEach(ele => {
+          if(ele.id == v.id)
+            ele.name = v.name;
+        })
+      }
+
+      console.log(this.dataMapping)
+      this.changeFolder(this.currentLocation);
+    }else{
+
+      /**
+       * prevent move element:
+       * all moving observable unsubscribe
+       *  */
+      this.allMoveingElement$.forEach(
+        (sub) => {
+          sub.unsubscribe();
+        }
+      )
+
+      this.moveFile$.unsubscribe();
+    }
+
+    
+
+    this.editing = !this.editing;
+    
+  }
+
+  check(id){
+
+    
+    this.checkBoxGroup[id] = !this.checkBoxGroup[id];
+    this.checked = false;
+    this.checkedNotAll = false;
+    console.log(this.checkBoxGroup)
+    this.checkboxs.forEach((ele) => {
+      if(this.checkBoxGroup[ele.id]){
+        this.checked = true;
+      }
+      if(this.checked && !this.checkBoxGroup[ele.id]){
+        this.checkedNotAll = true;
+      }
+      
+    })
+    console.log("not all:"+this.checkedNotAll)
+    console.log("all:"+this.checked)
+    
+  }
+
+  selectLocation(){
+    console.log('selected!')
+  }
 
 
 }

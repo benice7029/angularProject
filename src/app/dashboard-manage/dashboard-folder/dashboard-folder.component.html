@@ -1,7 +1,7 @@
 <!-- [attr.data-targetId] = "targetId" 
      It's a identification for moving file or folder to target folder   -->
 <p #f [attr.data-targetId] = "targetId">
-    <button [attr.data-targetId] = "targetId" *ngIf = "!canEdit" class="btn" (click) = "edit()">
+    <button [disabled] = "editing" [attr.data-targetId] = "targetId" *ngIf = "!canEdit" class="btn" (click) = "edit()">
         <i [attr.data-targetId] = "targetId" class="material-icons">edit</i>
     </button>
     <button [attr.data-targetId] = "targetId" *ngIf = "canEdit" class="btn" (click) = "edit()">
@@ -10,7 +10,7 @@
       </i>
     </button>
   <i [attr.data-targetId] = "targetId" class="material-icons" style="font-size: 15px">
-    folder_open
+    folder
   </i>
   <span [attr.data-targetId] = "targetId" *ngIf = "!canEdit">{{folderName}}</span>
 
