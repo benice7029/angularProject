@@ -47,20 +47,20 @@ export class DashboardFolderComponent implements OnInit, OnChanges, AfterViewIni
   }
 
   ngOnChanges(changes:SimpleChanges): void {
-    console.log('changing....')
+    //console.log('changing....')
     /**
      * when @Input editing is true,
      * prevent change folder observable be emited. 
      */
-    console.log(changes)
+    //console.log(changes)
     if(changes.editing.currentValue){
-      console.log("editing....");
+      //console.log("editing....");
       if(this.changeFolder$ != undefined)
         this.changeFolder$.unsubscribe();
-      console.log(this.changeFolder$)
+      //console.log(this.changeFolder$)
     }else{
       this.changeFolderLocation();
-      console.log(this.changeFolder$)
+      //console.log(this.changeFolder$)
     }
       
   }

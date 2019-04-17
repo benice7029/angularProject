@@ -39,25 +39,56 @@
 
             </div>
             <div class="btnGrp" >
-                <div >
-                    <mat-checkbox color="warn" [(ngModel)]="checked" [(indeterminate)]="checkedNotAll">
-                        <button mat-icon-button >
-                        <i class="material-icons">
-                            delete_forever
-                        </i>
-                        </button>
+                <div id="checkboxAll" >
+                    <mat-checkbox color="warn" (change) = "checkAll()" [(ngModel)]="checked" >
+                        
                     </mat-checkbox>
-                    <button mat-icon-button >
-                        <i class="material-icons" >
-                            file_copy
-                        </i>
-                    </button>
-                    <button mat-icon-button [matMenuTriggerFor]="menu">
-                        <i class="material-icons" >
-                            add_box
-                        </i>
-                    </button>
                     
+                    
+                </div>
+                <div id="features">
+                    <div>
+                        <button mat-icon-button >
+                            <i class="material-icons">
+                                delete_forever
+                            </i>
+                        </button>
+                        <button mat-icon-button >
+                            <i class="material-icons" >
+                                file_copy
+                            </i>
+                        </button>
+                        <button mat-icon-button>
+                            <i class="material-icons">
+                                move_to_inbox
+                            </i>
+                        </button>
+                        <div id="indiviualFeature" >
+                                <button mat-icon-button [matMenuTriggerFor]="menu">
+                                        <i class="material-icons" >
+                                            add_box
+                                        </i>
+                                </button>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div>
+                    <form 
+                    
+                    [formGroup]="fileForm">
+                    <mat-form-field >
+                        <input type="text" matInput placeholder="Searching..." formControlName="fileGroup"  [matAutocomplete]="autoGroup">
+                        <mat-autocomplete #autoGroup="matAutocomplete" >
+                            <mat-optgroup *ngFor="let group of fileGroupOptions | async" [label]="group.type">
+                            <mat-option (onSelectionChange)="selectLocation()" *ngFor="let file of group.files" [value]="file">
+                                {{file}}
+                            </mat-option>
+                        </mat-optgroup>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                    </form>
                 </div>
                 
                 <mat-menu   #menu="matMenu">
@@ -131,20 +162,7 @@
                 </mat-menu>
 
 
-                <form 
                 
-                [formGroup]="fileForm">
-                <mat-form-field>
-                    <input type="text" matInput placeholder="Searching..." formControlName="fileGroup"  [matAutocomplete]="autoGroup">
-                    <mat-autocomplete #autoGroup="matAutocomplete" >
-                        <mat-optgroup *ngFor="let group of fileGroupOptions | async" [label]="group.type">
-                        <mat-option (onSelectionChange)="selectLocation()" *ngFor="let file of group.files" [value]="file">
-                            {{file}}
-                        </mat-option>
-                    </mat-optgroup>
-                    </mat-autocomplete>
-                </mat-form-field>
-                </form>
           </div>
           <div class="content" >
             <!-- <div class="bar">
@@ -200,7 +218,7 @@
                   >
                       
                       <ng-container *ngSwitchCase = "'folder'">
-                          <mat-checkbox #checkbox [id] = "data.id" color="warn" (change) = "check(data.id)" [value]="checkBoxGroup[data.id]"></mat-checkbox>
+                          <mat-checkbox #checkbox [id] = "data.id" color="warn" (change) = "check()" [(ngModel)]="checkBoxGroup[data.id]"></mat-checkbox>
                           <app-dashboard-folder [attr.data-targetId]  = "data.name" 
                           [targetId] = "data.name" 
                           [folderName] = "data.name" 
@@ -221,7 +239,7 @@
                           </div>
                         </ng-container>
                       <ng-container *ngSwitchCase = "'file'">
-                          <mat-checkbox #checkbox [id] = "data.id" color="warn" (change) = "check(data.id)" [value]="checkBoxGroup[data.id]"></mat-checkbox>
+                          <mat-checkbox #checkbox [id] = "data.id" color="warn" (change) = "check()" [(ngModel)]="checkBoxGroup[data.id]"></mat-checkbox>
                           <app-dashboard-file 
                           [fileId] = "data.id" 
                           [fileName] = "data.name" 
