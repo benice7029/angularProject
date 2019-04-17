@@ -597,24 +597,26 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
       /**
        * change dataMapping value
        */
-      console.log(this.dataMapping)
       if(v.type == 'folder'){
-        this.dataMapping[this.currentLocation].datas.forEach(ele => {
-          if(ele.id == v.id){
-            this.dataMapping[v.name] = 
-            this.dataMapping[ele.name];
-            
-            for(let key in this.dataMapping){
-              console.log(key)
-              if(this.dataMapping[key].previous == ele.name)
-                this.dataMapping[key].previous = v.name;
+        if(this.dataMapping[v.name] == undefined){
+          this.dataMapping[this.currentLocation].datas.forEach(ele => {
+            if(ele.id == v.id){
+              this.dataMapping[v.name] = 
+              this.dataMapping[ele.name];
+              
+              for(let key in this.dataMapping){
+                console.log(key)
+                if(this.dataMapping[key].previous == ele.name)
+                  this.dataMapping[key].previous = v.name;
+              }
+              delete this.dataMapping[ele.name];
+              ele.name = v.name;
+              
+              
             }
-            delete this.dataMapping[ele.name];
-            ele.name = v.name;
-            
-            
-          }
-        })
+          })
+        }
+        
 
         
 
