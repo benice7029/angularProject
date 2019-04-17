@@ -196,8 +196,39 @@
               </div>
               <div></div>
             </div>
-            <div id="fileContainer">
-          
+            <div id="fileContainer" style="position:relative">
+                <div style="position: absolute;
+                background-color: #d7d7d7;
+                border: 1px solid #9b9b9b;
+                top: 100px;
+                left: 100px;
+                padding: 5px 10px;
+                border-radius: 5px;">
+                    <div style="
+                    padding: 10px 0;
+                ">
+                        <span>
+                            <i [attr.data-targetId] = "targetId" class="material-icons" style="font-size: 15px">
+                                folder
+                            </i>
+                        </span>
+                        <span>
+                            Folder 1
+                        </span>
+                    </div>
+                    <div style="
+                    padding: 10px 0;
+                ">
+                        <span>
+                            <i [attr.data-targetId] = "targetId" class="material-icons" style="font-size: 15px">
+                                folder
+                            </i>
+                        </span>
+                        <span>
+                            Folder 1ZxXXsxdsasd
+                        </span>
+                    </div>
+                </div>
               
               <ng-container *ngIf = "dataMapping">
                   <ng-container *ngIf = "dataMapping[currentLocation].previous != ''">

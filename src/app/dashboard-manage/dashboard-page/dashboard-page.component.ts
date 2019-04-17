@@ -331,6 +331,48 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
 
     this.selectedElementEvent$ = 
     fromEvent(document.getElementsByClassName('selected'),'mousedown')
+    .pipe(
+          
+      map(() =>
+        this.mouseMove$
+        .pipe(
+          
+          tap(() => {
+            console.log('moving...')
+          }),
+          
+          takeUntil(this.mouseUp$)
+        )
+        .subscribe(
+          (e)=> {
+            console.log('e can get mouse\'s clientX, clientY...etc')
+              // this.move.toArray()[index].nativeElement.style.position = 'absolute';
+              // this.move.toArray()[index].nativeElement.style.width = '75vw' ;
+              // this.move.toArray()[index].nativeElement.style.top = (e.clientY -130 ) + 'px'
+              // this.move.toArray()[index].nativeElement.style.left = e.clientX  +10 + 'px'
+              
+            
+            
+            //console.log(e)
+          }, // next
+          () => {}, // error
+          () => {   // complete
+            console.log('mouse up')
+
+          }
+          
+        )
+      )
+    ).subscribe(
+      (e) => {
+        
+        console.log('mouse down');
+      },
+      () => {}, // error
+      () => {   // complete
+        console.log('complete')
+      }
+    )
     
 
     this.surveyForm = new FormGroup({
