@@ -696,7 +696,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   selectLocation(){
-    console.log('selected!')
+    console.log('selected!!')
   }
 
 
