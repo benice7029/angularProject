@@ -201,15 +201,19 @@
               
               <ng-container *ngIf = "dataMapping">
                   <ng-container *ngIf = "dataMapping[currentLocation].previous != ''">
-                      <div class="MenuList previousFolder canStore">
+                      <div class="unselected ">
                         <div [attr.data-targetId] = "dataMapping[currentLocation].previous"></div>
-                        <p [attr.data-targetId] = "dataMapping[currentLocation].previous" class="previous" (click) = "changeFolder(dataMapping[currentLocation].previous)">
+                        <p [attr.data-targetId] = "dataMapping[currentLocation].previous" class="previous" (dblclick) = "changeFolder(dataMapping[currentLocation].previous)">
                             <i class="far fa-folder-open"></i>../
                         </p>
                         
                       </div>
                   </ng-container>
-                  <div class="MenuList canMove {{data.type}}" #move 
+                  <div [id]="data.id" 
+                      [ngClass]="{'unselected': !this.checkBoxGroup[data.id],  
+                                     'selected': this.checkBoxGroup[data.id]}" 
+                      [class] = "data.type"
+                         #move 
                       [ngSwitch]="data.type" 
                       *ngFor = "let data of dataMapping[currentLocation].datas;
                                   let i = index;" 
@@ -218,7 +222,7 @@
                   >
                       
                       <ng-container *ngSwitchCase = "'folder'">
-                          <mat-checkbox #checkbox [id] = "data.id" color="warn" (change) = "check()" [(ngModel)]="checkBoxGroup[data.id]"></mat-checkbox>
+                          <mat-checkbox #checkbox [id] = "data.id" color="warn" (change) = "check($event)" [(ngModel)]="checkBoxGroup[data.id]"></mat-checkbox>
                           <app-dashboard-folder [attr.data-targetId]  = "data.name" 
                           [targetId] = "data.name" 
                           [folderName] = "data.name" 
@@ -239,7 +243,7 @@
                           </div>
                         </ng-container>
                       <ng-container *ngSwitchCase = "'file'">
-                          <mat-checkbox #checkbox [id] = "data.id" color="warn" (change) = "check()" [(ngModel)]="checkBoxGroup[data.id]"></mat-checkbox>
+                          <mat-checkbox #checkbox [id] = "data.id" color="warn" (change) = "check($event)" [(ngModel)]="checkBoxGroup[data.id]"></mat-checkbox>
                           <app-dashboard-file 
                           [fileId] = "data.id" 
                           [fileName] = "data.name" 

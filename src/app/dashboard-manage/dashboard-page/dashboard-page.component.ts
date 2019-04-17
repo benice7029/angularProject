@@ -61,11 +61,9 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
   mouseMove$;
   //move file: observable
 
+  selectedElementEvent$;
 
-  moveFile$;
-
-  allMoveingElement$: Array<any> = [];
-
+  selectedElement: Array<any>;
   
 
   dataMapping;// folder and dashboard data
@@ -167,17 +165,8 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
      * Notice:
      * check if all of observalbe in this component be unsubscribed
      */
-    if(this.allMoveingElement$.length > 0){
-      this.allMoveingElement$.forEach(
-        (o) => {
-          o.unsubscribe();
-        }
-      )
-      this.allMoveingElement$ = [];
-    }
+    
 
-    if(this.moveFile$ != undefined)
-      this.moveFile$.unsubscribe();
 
   }
 
@@ -186,6 +175,8 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
     this.currentLocation = 'Root'
 
     this.currentLocationArray = new Array();
+
+    this.selectedElement = new Array();
 
     this.fileGroupOptions = this.fileForm.get('fileGroup')!.valueChanges
       .pipe(
@@ -337,8 +328,10 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
 
     this.mouseUp$ = fromEvent(document,'mouseup')
     this.mouseMove$ = fromEvent(document, 'mousemove')
-    this.mouseM();
 
+    this.selectedElementEvent$ = 
+    fromEvent(document.getElementsByClassName('selected'),'mousedown')
+    
 
     this.surveyForm = new FormGroup({
       mainQuestions: new FormGroup({
@@ -350,197 +343,6 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
     });
   }
 
-  mouseM(){
-
-    /**
-     * when calling mouseM function,
-     * it will create new observable be subscribed.
-     * It's important to preventing fromEvent observable 
-     * which detect moving element repeat subscribe.
-     */
-
-    /**
-     * If allMoveingElement$ is not empty,it has observable
-     * unsubscribed.
-    */
-    if(this.allMoveingElement$.length > 0){
-        this.allMoveingElement$.forEach(
-          (o) => {
-            o.unsubscribe();
-          }
-        )
-        this.allMoveingElement$ = [];
-    }
-
-    
-
-    this.move.forEach((element,index) => {
-      this.allMoveingElement$.push(
-        fromEvent(element.nativeElement, 'mousedown')
-        .pipe(
-          
-          map(() =>
-            this.mouseMove$
-            .pipe(
-              
-              tap(() => {
-                console.log('moving...')
-              }),
-              
-              takeUntil(this.mouseUp$)
-            )
-            .subscribe(
-              (e)=> {
-                if(this.move.toArray()[index] != undefined){
-                  this.move.toArray()[index].nativeElement.style.position = 'absolute';
-                  this.move.toArray()[index].nativeElement.style.width = '75vw' ;
-                  this.move.toArray()[index].nativeElement.style.top = (e.clientY -130 ) + 'px'
-                  this.move.toArray()[index].nativeElement.style.left = e.clientX  +10 + 'px'
-                  
-                }
-                
-                
-                //console.log(e)
-              }, // next
-              () => {}, // error
-              () => {   // complete
-                console.log('mouse up')
-
-
-                if(this.move.toArray()[index] != undefined){
-                  this.move.toArray()[index].nativeElement.classList.remove('moving')
-                  this.move.toArray()[index].nativeElement.style.position = 'unset';
-                  this.move.toArray()[index].nativeElement.style.width = 'unset' ;
-                }
-                
-                Array.from(document.getElementsByClassName('canStore'))
-                .forEach((el) => {
-                  if(el.classList.contains('previousFolder'))
-                    console.log('');
-                  else
-                    el.classList.remove('canStore');
-                });
-                
-                if(this.moveFile$ != undefined)
-                  this.moveFile$.unsubscribe();
-                
-                
-                
-              }
-              
-            )
-          )
-        ).subscribe(
-          (e) => {
-            if(this.move.toArray()[index] != undefined)
-              this.move.toArray()[index].nativeElement.classList.add('moving');
-            
-            Array.from(document.getElementsByClassName('folder'))
-            .forEach((el) => {
-              // Do stuff here
-              if(!el.classList.contains('moving'))
-                el.classList.add('canStore');
-            });
-
-            /**
-             * prevent multiple subscribe the observable 
-             * which match the condition
-             * but execute subscribe in previous moving
-             * 
-             */
-
-            if(this.moveFile$ != null)
-              this.moveFile$.unsubscribe()
-
-            /**
-             * when mouse up on element including class 'canStore'
-             * and zip with current mouse down element
-             * 
-             * subscribe can handle move to folder
-             * use attr data-id to get dashboard / folder 's id
-             * update dataMapping can move dashboard / folder
-             */
-            this.moveFile$ = 
-            zip(
-              fromEvent(document.getElementsByClassName('canStore'),'mouseup'),
-              of(this.move.toArray()[index] != undefined ? this.move.toArray()[index].nativeElement : null)
-              )
-            
-            .subscribe(
-                (v) => {
-                    console.log('start move file...')
-                    console.log(v)
-                    this.dataMapping[this.currentLocation]['datas']
-                    .forEach((element,ind) => {
-                      if(element.id == v[1].dataset.id){
-
-                        /**
-                         * push current dashboard / folder 
-                         * to target folder
-                         * 
-                         * remove current dashboard / folder
-                         * from current folder
-                         */
-
-                        let target = v[0].target as HTMLTextAreaElement;
-                        
-                        if(element.type == 'folder'){
-                          this.dataMapping[element.name].previous 
-                          = target.dataset.targetid
-                          this.dataMapping[target.dataset.targetid]['datas']
-                          = [element,...this.dataMapping[target.dataset.targetid]['datas']]
-                        }else{
-                          this.dataMapping[target.dataset.targetid]['datas']
-                          .push(element)
-                        }
-                        // make selected element to be unchecked
-                        this.checkBoxGroup[v[1].dataset.id] = false;
-                        console.log('set to be false')
-
-                        this.dataMapping[this.currentLocation]['datas']
-                        .splice(ind, 1)
-                        
-
-                      }
-                      
-                    })
-                    /**
-                     * call changeFolder function because of element change
-                     * fromevent observable binding on #move be removed possibly
-                     * update the fromevent observable by calling changeFolder
-                     */
-                    // recheck all checkbox need to be checked or not
-                    console.log('check ...'+ this.checked)
-                    console.log(this.checkBoxGroup)
-                    this.check();
-                    console.log('check finish...'+ this.checked)
-                    this.moveFile$.unsubscribe();
-                    this.check(); // recheck all checkbox need to be checked or not
-                    this.reCheckElement(this.currentLocation);
-                },
-                (error) => {
-                  
-                },
-                () => {
-                  
-                  console.log('complete');
-                }
-            )
-
-            console.log('mouse down');
-          },
-          () => {}, // error
-          () => {   // complete
-            console.log('complete')
-          }
-        )
-      )
-      ;
-    }) 
-
-    
-    
-  }
 
 
   changeFolder(foldername){
@@ -563,23 +365,11 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   reCheckElement(foldername){
-    this.moveFile$.unsubscribe();
 
     if(this.dataMapping[foldername] != undefined){
       this.currentLocation = foldername;
 
-      let checkItmUpdate = setInterval(
-        () => {
-          console.log('check.....')
-          if(this.move.length == 
-            document.getElementsByClassName('canMove').length){
-              this.mouseM();
-              clearInterval(checkItmUpdate);
-            }
-            
-        },
-        100
-      )
+      
       
     }
   }
@@ -629,7 +419,6 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
         })
       }
 
-      console.log(this.dataMapping)
       this.reCheckElement(this.currentLocation);
     }else{
 
@@ -637,13 +426,8 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
        * prevent move element:
        * all moving observable unsubscribe
        *  */
-      this.allMoveingElement$.forEach(
-        (sub) => {
-          sub.unsubscribe();
-        }
-      )
+      
 
-      this.moveFile$.unsubscribe();
     }
 
     
@@ -652,21 +436,29 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
     
   }
 
-  check(){
-
+  check(event){
+    
+    document.getElementById(event.source.id).classList.remove('unselected');
+    document.getElementById(event.source.id).classList.add('selected')
     this.checked = false;
     for(let k in this.checkBoxGroup){
       if(this.checkBoxGroup[k])
-      this.checked = true;
+        this.checked = true;
     }
-    // this.checkboxs.forEach((ele) => {
-    //   if(ele._checked){
-         
-    //     this.checked = true;
-    //   }
-      
-      
-    // })
+    if(this.checkBoxGroup[event.source.id]){
+      console.log('checked!')
+      this.checked = true;
+      this.selectedElement.push({
+        id: event.source.id,
+        type: document.getElementById(event.source.id).classList[0]
+      })
+    }else{
+      this.selectedElement = this.selectedElement.filter((value) => {
+        if(value.id != event.source.id )
+          return true;
+      })
+    }
+    console.log(this.selectedElement)
     
   }
 
@@ -682,8 +474,6 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
       
     })
     
-    
-    console.log(this.checkBoxGroup)
   }
 
   clearCheck(){
@@ -692,7 +482,6 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
       this.checkBoxGroup[k] = false;
     }
     
-    console.log(this.checkboxs)
   }
 
   selectLocation(){

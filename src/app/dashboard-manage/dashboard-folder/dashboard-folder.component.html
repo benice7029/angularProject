@@ -1,6 +1,6 @@
 <!-- [attr.data-targetId] = "targetId" 
      It's a identification for moving file or folder to target folder   -->
-<p #f [attr.data-targetId] = "targetId">
+<p #f [attr.data-targetId] = "targetId" >
     <button [disabled] = "editing" [attr.data-targetId] = "targetId" *ngIf = "!canEdit" class="btn" (click) = "edit()">
         <i [attr.data-targetId] = "targetId" class="material-icons">edit</i>
     </button>

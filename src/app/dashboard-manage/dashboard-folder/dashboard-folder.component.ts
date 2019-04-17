@@ -103,17 +103,15 @@ export class DashboardFolderComponent implements OnInit, OnChanges, AfterViewIni
   }
 
   changeFolderLocation(){
-    console.log('changeFolder$ subscribe')
     /**
      * 若mouse down 與 up 區間小於0.5s,
      * 即進入下一層
      * 否則將視為parent component 在做拖拉 event
      */
     this.changeFolder$ = 
-      fromEvent(this.folder.nativeElement,'mousedown')
+      fromEvent(this.folder.nativeElement,'click')
       .pipe(
-        merge(fromEvent(this.folder.nativeElement,'mouseup')),
-        bufferTime(500),
+        bufferTime(800),
         filter(arr => arr.length >= 2)
       )
       .subscribe(
