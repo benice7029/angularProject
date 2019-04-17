@@ -493,8 +493,9 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
                           this.dataMapping[target.dataset.targetid]['datas']
                           .push(element)
                         }
-
-                        
+                        // make selected element to be unchecked
+                        this.checkBoxGroup[v[1].dataset.id] = false;
+                        console.log('set to be false')
 
                         this.dataMapping[this.currentLocation]['datas']
                         .splice(ind, 1)
@@ -508,8 +509,13 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
                      * fromevent observable binding on #move be removed possibly
                      * update the fromevent observable by calling changeFolder
                      */
-                    
+                    // recheck all checkbox need to be checked or not
+                    console.log('check ...'+ this.checked)
+                    console.log(this.checkBoxGroup)
+                    this.check();
+                    console.log('check finish...'+ this.checked)
                     this.moveFile$.unsubscribe();
+                    this.check(); // recheck all checkbox need to be checked or not
                     this.reCheckElement(this.currentLocation);
                 },
                 (error) => {
@@ -551,6 +557,8 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
     this.clearCheck();
     
     this.reCheckElement(foldername);
+
+    
     
   }
 
@@ -645,14 +653,18 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
   check(){
 
     this.checked = false;
-    this.checkboxs.forEach((ele) => {
-      if(ele._checked){
+    for(let k in this.checkBoxGroup){
+      if(this.checkBoxGroup[k])
+      this.checked = true;
+    }
+    // this.checkboxs.forEach((ele) => {
+    //   if(ele._checked){
          
-        this.checked = true;
-      }
+    //     this.checked = true;
+    //   }
       
       
-    })
+    // })
     
   }
 
@@ -674,11 +686,11 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
 
   clearCheck(){
     this.checked = false;
-    this.checkboxs.forEach((ele) => {
-      this.checkBoxGroup[ele.id] = false;
-      
-      
-    })
+    for(let k in this.checkBoxGroup){
+      this.checkBoxGroup[k] = false;
+    }
+    
+    console.log(this.checkboxs)
   }
 
   selectLocation(){
