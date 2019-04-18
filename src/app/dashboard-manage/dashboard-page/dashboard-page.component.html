@@ -34,8 +34,8 @@
             
             
 
-        </div>
-        <div class="btnGrp" >
+    </div>
+    <div class="btnGrp" >
             <div id="checkboxAll" >
                 <mat-checkbox [disabled] = "editing" color="warn" (change) = "checkAll()" [(ngModel)]="checked" >
                     
@@ -160,21 +160,9 @@
 
 
             
-      </div>
-      <div class="content" style="position:relative">
-        <!-- <div class="bar">
-            <section class="example-section">
-                <mat-checkbox color="warn" [(ngModel)]="checked">
-                    <button class="btn">
-                      <i class="material-icons">
-                          delete_forever
-                      </i>
-                    </button>
-                </mat-checkbox>
-            </section>
-            
-      
-        </div> -->
+    </div>
+    <div class="content" style="position:relative">
+        
         <div id="title">
           <div>
             
@@ -276,7 +264,7 @@
                               </i>
                           </button>
                       </div>
-                    </ng-container>
+                  </ng-container>
                   <ng-container *ngSwitchCase = "'dashboard'">
                       <mat-checkbox [disabled] = "editing" #checkbox [id] = "data.id" color="warn" (change) = "check($event)" [(ngModel)]="checkBoxGroup[data.id]"></mat-checkbox>
                       <app-dashboard-file 

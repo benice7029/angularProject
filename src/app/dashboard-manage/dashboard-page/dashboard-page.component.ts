@@ -153,7 +153,6 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
         }
                       
     })
-    console.log(this.dataMapping)
     this.reCheckElement(this.currentLocation);
   }
 
@@ -183,6 +182,9 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
      * check if all of observalbe in this component be unsubscribed
      */
     
+
+    if(this.selectedElementEvent$ != undefined)
+      this.selectedElementEvent$.unsubscribe();
 
 
   }
@@ -385,7 +387,6 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
               )
               .subscribe(
                 (e)=> {
-                  console.log(e)
                   let selectedArea = document.getElementById('selectedArea');
                   
                   selectedArea.style.top = (e.clientY -247 ) + 'px'
@@ -398,10 +399,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
                   let ele = document.getElementById(this.targetFolder);
                   if(ele != undefined){
                     if(ele.classList.contains('canStore')){
-                      console.log(this.selectedElements)
-                      console.log(`save to ${ele.getAttribute('data-targetname')}`)
                       this.selectedElements.forEach((selected) => {
-                        console.log(selected)
                         if(selected.type == 'folder'){
                           this.dataMapping[selected.name].previous
                           = ele.getAttribute('data-targetname');
@@ -429,7 +427,6 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
                        * need to send http request to backend 
                        * for updating datas */
 
-                      console.log(this.dataMapping)
                     }
                   }
                   
@@ -575,9 +572,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
         this.checked = true;
     }
     if(this.checkBoxGroup[event.source.id]){
-      console.log('checked!')
       this.checked = true;
-      console.log(document.getElementById(event.source.id).getAttribute('data-targetName'))
       this.selectedElements.push({
         id: event.source.id,
         name: document.getElementById(event.source.id).getAttribute('data-targetName'),
