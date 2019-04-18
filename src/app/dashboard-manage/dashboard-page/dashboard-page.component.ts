@@ -10,6 +10,7 @@ export interface FileType {
   files: string[];
 }
 
+
 export const _filter = (opt: string[], value: string): string[] => {
   const filterValue = value.toLowerCase();
 
@@ -30,7 +31,6 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
 
   @ViewChildren('checkbox') checkboxs : QueryList<any>;
 
-  surveyForm: FormGroup;
 
   checked:boolean = false;
 
@@ -66,6 +66,8 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
   selectedElements: Array<any>;
   
   targetFolder: string;
+
+  targetFolderName: string;
 
   dataMapping;// folder and dashboard data
 
@@ -127,7 +129,12 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   deleteElement(element,type){
-
+    if(this.selectedElements.length != 0){
+      this.selectedElements = this.selectedElements.filter((value) => {
+        if(value.name != element )
+          return true;
+      })
+    }
     /**
      * should send http delete dashboard / folder
      */
@@ -148,6 +155,15 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
     })
     console.log(this.dataMapping)
     this.reCheckElement(this.currentLocation);
+  }
+
+  deleteAllSelected(){
+    if(this.selectedElements.length != 0){
+      this.selectedElements.forEach((e) => {
+        this.deleteElement(e.name,e.type);
+      })
+      this.clearCheck()
+    }
   }
 
   
@@ -334,16 +350,6 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
     this.mouseMove$ = fromEvent(document, 'mousemove')
 
     
-    
-
-    this.surveyForm = new FormGroup({
-      mainQuestions: new FormGroup({
-        payForAll: new FormControl(false),
-        payForBook: new FormControl(false),
-        payForMusic: new FormControl(false),
-        payForMovie: new FormControl(true)
-      })
-    });
   }
 
   selectedObservable_subscribe(){
@@ -361,6 +367,17 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
                 tap((e: MouseEvent) => {
                   let element = e.target as HTMLElement;
                   this.targetFolder = element.dataset.targetid;
+                  let ele = document.getElementById(this.targetFolder);
+                  if(ele != undefined){
+                    if(ele.classList.contains('canStore')){
+                      this.targetFolderName = ele.getAttribute('data-targetname')
+                    }else{
+                      this.targetFolderName = '';
+                    }
+
+                  }else{
+                    this.targetFolderName = '';
+                  }
                 }),
                 
                 takeUntil(this.mouseUp$),
@@ -368,10 +385,11 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
               )
               .subscribe(
                 (e)=> {
+                  console.log(e)
                   let selectedArea = document.getElementById('selectedArea');
                   
-                  selectedArea.style.top = (e.clientY -330 ) + 'px'
-                  selectedArea.style.left = e.clientX  +10 + 'px'
+                  selectedArea.style.top = (e.clientY -247 ) + 'px'
+                  selectedArea.style.left = e.clientX  + 'px'
                   selectedArea.style.display = 'unset'
                   
                 }, // next
@@ -382,8 +400,39 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
                     if(ele.classList.contains('canStore')){
                       console.log(this.selectedElements)
                       console.log(`save to ${ele.getAttribute('data-targetname')}`)
+                      this.selectedElements.forEach((selected) => {
+                        console.log(selected)
+                        if(selected.type == 'folder'){
+                          this.dataMapping[selected.name].previous
+                          = ele.getAttribute('data-targetname');
+                        }
+                        this.dataMapping[this.currentLocation]['datas'].forEach((deleteCheck,ind) => {
+                          if(deleteCheck.id == selected.id){
+
+                            if(selected.type == 'folder'){
+                              this.dataMapping[ele.getAttribute('data-targetname')]['datas']
+                              = [deleteCheck,...this.dataMapping[ele.getAttribute('data-targetname')]['datas']]
+                            }else{
+                              this.dataMapping[ele.getAttribute('data-targetname')]['datas']
+                              .push(deleteCheck);
+                            }
+
+                            this.dataMapping[this.currentLocation]['datas']
+                            .splice(ind, 1)
+                          }
+                        })
+                        
+                      })
+                      this.clearCheck();
+                      
+                      /**
+                       * need to send http request to backend 
+                       * for updating datas */
+
+                      console.log(this.dataMapping)
                     }
                   }
+                  
                   
 
                   console.log('mouse up')
@@ -437,8 +486,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
     
     this.reCheckElement(foldername);
 
-    //clear selected elements
-    this.selectedElements = new Array();
+    
     
     
   }
@@ -459,6 +507,8 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
    */
 
   preventMoveing(v){
+    //cancel selected 
+    this.clearCheck();
 
     //when false, resubscribe observable
     if(this.editing){
@@ -546,24 +596,42 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   checkAll(){
+    this.selectedObservable_unsubscribe();
     
+
     this.checkboxs.forEach((ele) => {
       if(this.checked){
         this.checkBoxGroup[ele.id] = true;
-      }else
+        this.selectedElements.push({
+          id: ele.id,
+          name: document.getElementById(ele.id).getAttribute('data-targetName'),
+          type: document.getElementById(ele.id).classList[0]
+        })
+      }else{
         this.checkBoxGroup[ele.id] = false;
+        this.selectedElements = this.selectedElements.filter((value) => {
+          if(value.id != ele.id )
+            return true;
+        })
+      }
+        
       
       
       
     })
+
+    this.selectedObservable_subscribe();
     
   }
 
   clearCheck(){
+    this.selectedObservable_unsubscribe()
     this.checked = false;
     for(let k in this.checkBoxGroup){
       this.checkBoxGroup[k] = false;
     }
+    //clear selected elements
+    this.selectedElements = new Array();
     
   }
 

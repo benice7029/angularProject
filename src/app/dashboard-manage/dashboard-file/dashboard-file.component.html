@@ -1,4 +1,4 @@
-<p >
+<p [ngStyle] = "{'opacity':(editing&&!canEdit? '0.5':'1')}">
       <button [disabled] = "editing"  *ngIf = "!canEdit" class="btn" (click) = "edit()">
         <i class="material-icons">edit</i>
       </button>

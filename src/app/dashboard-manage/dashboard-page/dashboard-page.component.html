@@ -4,297 +4,304 @@
     </h1>
 
     <!-- create another component for tabs dashboard component -->
-    <mat-tab-group mat-align-tabs="end">
-        
-        <mat-tab label="{{currentLocation }}">
-            <div class="locationPath" > 
-                <button >
-                    <i class="material-icons">
-                        home
+    <div class="locationPath" > 
+            <button [disabled] = "editing">
+                <i class="material-icons">
+                    home
+                </i>
+                <span [ngStyle] = "{ 'cursor': (editing ? 'not-allowed' : 'pointer') }" (click) = "editing ?false: changeFolder('Root')" >
+                    Root
+                </span>
+                
+            </button>
+            <ng-container *ngFor = "let current of currentLocationArray">
+                <button [disabled] = "editing">
+                    <i class="material-icons" >
+                        arrow_forward_ios
                     </i>
-                    <span (click) = "changeFolder('Root')" >
-                        Root
+                </button>
+                <button [disabled] = "editing">
+                    <i class="material-icons" >
+                            folder
+                    </i>
+                    <span [ngStyle] = "{ 'cursor': (editing ? 'not-allowed' : 'pointer') }" (click) = "editing ?false:changeFolder(current)" >
+                        {{current}}
                     </span>
                     
                 </button>
-                <ng-container *ngFor = "let current of currentLocationArray">
-                    <button>
-                        <i class="material-icons" >
-                            arrow_forward_ios
+            </ng-container>
+            
+            
+            
+
+        </div>
+        <div class="btnGrp" >
+            <div id="checkboxAll" >
+                <mat-checkbox [disabled] = "editing" color="warn" (change) = "checkAll()" [(ngModel)]="checked" >
+                    
+                </mat-checkbox>
+                
+                
+            </div>
+            <div id="features">
+                <div>
+                    <button title="Delete" mat-icon-button (click) = "deleteAllSelected()" [disabled] = "editing || selectedElements.length == 0">
+                        <i class="material-icons">
+                            delete_forever
                         </i>
                     </button>
-                    <button >
+                    <button title="Copy" mat-icon-button [disabled] = "editing || selectedElements.length == 0">
                         <i class="material-icons" >
-                                folder
+                            file_copy
                         </i>
-                        <span (click) = "changeFolder(current)" >
-                            {{current}}
-                        </span>
-                        
                     </button>
+                    <button mat-icon-button [disabled] = "editing || selectedElements.length == 0">
+                        <i class="material-icons">
+                            move_to_inbox
+                        </i>
+                    </button>
+                    <div id="indiviualFeature" >
+                            <button title="Add" mat-icon-button [matMenuTriggerFor]="menu" [disabled] = "editing">
+                                    <i class="material-icons" >
+                                        add_box
+                                    </i>
+                            </button>
+                    </div>
+                    
+                </div>
+                
+            </div>
+            <div>
+                <form 
+                
+                [formGroup]="fileForm">
+                <mat-form-field >
+                    <input type="text" matInput placeholder="Searching..." formControlName="fileGroup"  [matAutocomplete]="autoGroup">
+                    <mat-autocomplete #autoGroup="matAutocomplete" >
+                        <mat-optgroup *ngFor="let group of fileGroupOptions | async" [label]="group.type">
+                        <mat-option [disabled] = "editing" (onSelectionChange)="selectLocation()" *ngFor="let file of group.files" [value]="file">
+                            {{file}}
+                        </mat-option>
+                    </mat-optgroup>
+                    </mat-autocomplete>
+                </mat-form-field>
+                </form>
+            </div>
+            
+            <mat-menu   #menu="matMenu">
+                <button [disabled] = "editing" mat-menu-item [matMenuTriggerFor]="folder">
+                    <i class="material-icons" style="font-size: 15px">
+                        folder_open
+                    </i>
+                    Folder
+                </button>
+                <button [disabled] = "editing" mat-menu-item [matMenuTriggerFor]="dashboard">
+                    <i class="material-icons" style="font-size: 15px">
+                        dashboard
+                    </i>
+                    Dashboard
+                </button>
+                
+            </mat-menu>
+            <mat-menu  #folder="matMenu">
+                <div (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+                    <button 
+                    
+                    [disabled] = "newFolder.value == ''" class="saveButton" 
+                    (click)="save(newFolder.value,'folder');newFolder.value = ''"
+                    >
+                        <i class="material-icons">
+                            save
+                        </i>
+                    </button>
+                    <mat-form-field  class="example-full-width" 
+                        [style.padding] = "'0px 5px'" 
+                        [style.fontSize] = "'10px'"
+                        [style.width] = "'60%'">
+                        <input #newFolder matInput placeholder="Folder Name"  [formControl]="folderNameFormControl">
+                        <button mat-button *ngIf="newFolder.value" matSuffix mat-icon-button aria-label="Clear" (click)="newFolder.value=''">
+                        <mat-icon>close</mat-icon>
+                        </button>
+                        <mat-error *ngIf="folderNameFormControl.hasError('required')">
+                            Folder name is <strong>required</strong>
+                        </mat-error>
+                    </mat-form-field>
+                    
+                </div>
+                
+                
+            </mat-menu>
+            <mat-menu  #dashboard="matMenu">
+                <div (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+                    <button 
+                    
+                    [disabled] = "newFile.value == ''" class="saveButton" 
+                    (click)="save(newFile.value,'dashboard');newFile.value = ''"
+                    >
+                        <i class="material-icons">
+                            save
+                        </i>
+                    </button>
+                    <mat-form-field  class="example-full-width" 
+                        [style.padding] = "'0px 5px'" 
+                        [style.fontSize] = "'10px'"
+                        [style.width] = "'60%'">
+                        <input #newFile matInput placeholder="Dashboard Name"  [formControl]="fileNameFormControl">
+                        <button mat-button *ngIf="newFile.value" matSuffix mat-icon-button aria-label="Clear" (click)="newFile.value=''">
+                        <mat-icon>close</mat-icon>
+                        </button>
+                        <mat-error *ngIf="fileNameFormControl.hasError('required')">
+                            Dashboard name is <strong>required</strong>
+                        </mat-error>
+                    </mat-form-field>
+                    
+                </div>
+            </mat-menu>
+
+
+            
+      </div>
+      <div class="content" style="position:relative">
+        <!-- <div class="bar">
+            <section class="example-section">
+                <mat-checkbox color="warn" [(ngModel)]="checked">
+                    <button class="btn">
+                      <i class="material-icons">
+                          delete_forever
+                      </i>
+                    </button>
+                </mat-checkbox>
+            </section>
+            
+      
+        </div> -->
+        <div id="title">
+          <div>
+            
+          </div>
+          <div id="column_filename">
+              File Name
+          </div>
+          <div class="column_name">
+              File Number
+          </div>
+          <div class="column_name">
+              Editor
+          </div>
+          <div class="column_name">
+              Creation Date
+          </div>
+          <div></div>
+        </div>
+        <div id="fileContainer" >
+            
+            <div id = "selectedArea" style="position: absolute;
+            background-color: #f1f1f1;
+            border: 1px solid #9b9b9b;
+            top: 100px;
+            left: 100px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: none">
+            <span
+                [ngStyle] = "{'display' : (targetFolderName==undefined || targetFolderName=='' ? 'none' : 'unset' )}" 
+                id="puttingArrow" 
+                style="position: absolute;top: -25px;left:-10px;white-space: nowrap; border: 1px solid gray;
+                background-color: white;    padding: 1px 5px;" >
+                <i style="    font-size: 15px;" class="material-icons">
+                        arrow_back
+                </i>
+                <span style=" vertical-align: top;font-size:13px;">Move to {{targetFolderName}}</span>
+                
+            </span>
+            
+                <ng-container *ngFor = "let element of selectedElements">
+                    <div style="
+                        padding: 10px 0;
+                    ">
+                            <span>
+                                <i [attr.data-targetId] = "element.id" class="material-icons" style="font-size: 15px">
+                                   {{element.type}} 
+                                </i>
+                            </span>
+                            <span>
+                                   {{element.name}}
+                            </span>
+                        </div>
                 </ng-container>
                 
                 
-                
-
             </div>
-            <div class="btnGrp" >
-                <div id="checkboxAll" >
-                    <mat-checkbox color="warn" (change) = "checkAll()" [(ngModel)]="checked" >
-                        
-                    </mat-checkbox>
-                    
-                    
-                </div>
-                <div id="features">
-                    <div>
-                        <button mat-icon-button >
-                            <i class="material-icons">
-                                delete_forever
-                            </i>
-                        </button>
-                        <button mat-icon-button >
-                            <i class="material-icons" >
-                                file_copy
-                            </i>
-                        </button>
-                        <button mat-icon-button>
-                            <i class="material-icons">
-                                move_to_inbox
-                            </i>
-                        </button>
-                        <div id="indiviualFeature" >
-                                <button mat-icon-button [matMenuTriggerFor]="menu">
-                                        <i class="material-icons" >
-                                            add_box
-                                        </i>
-                                </button>
-                        </div>
-                        
-                    </div>
-                    
-                </div>
-                <div>
-                    <form 
-                    
-                    [formGroup]="fileForm">
-                    <mat-form-field >
-                        <input type="text" matInput placeholder="Searching..." formControlName="fileGroup"  [matAutocomplete]="autoGroup">
-                        <mat-autocomplete #autoGroup="matAutocomplete" >
-                            <mat-optgroup *ngFor="let group of fileGroupOptions | async" [label]="group.type">
-                            <mat-option (onSelectionChange)="selectLocation()" *ngFor="let file of group.files" [value]="file">
-                                {{file}}
-                            </mat-option>
-                        </mat-optgroup>
-                        </mat-autocomplete>
-                    </mat-form-field>
-                    </form>
-                </div>
-                
-                <mat-menu   #menu="matMenu">
-                    <button [disabled] = "editing" mat-menu-item [matMenuTriggerFor]="folder">
-                        <i class="material-icons" style="font-size: 15px">
-                            folder_open
-                        </i>
-                        Folder
-                    </button>
-                    <button [disabled] = "editing" mat-menu-item [matMenuTriggerFor]="file">
-                        <i class="material-icons" style="font-size: 15px">
-                            dashboard
-                        </i>
-                        Dashboard
-                    </button>
-                    
-                </mat-menu>
-                <mat-menu  #folder="matMenu">
-                    <div (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
-                        <button 
-                        
-                        [disabled] = "newFolder.value == ''" class="saveButton" 
-                        (click)="save(newFolder.value,'folder');newFolder.value = ''"
-                        >
-                            <i class="material-icons">
-                                save
-                            </i>
-                        </button>
-                        <mat-form-field  class="example-full-width" 
-                            [style.padding] = "'0px 5px'" 
-                            [style.fontSize] = "'10px'"
-                            [style.width] = "'60%'">
-                            <input #newFolder matInput placeholder="Folder Name"  [formControl]="folderNameFormControl">
-                            <button mat-button *ngIf="newFolder.value" matSuffix mat-icon-button aria-label="Clear" (click)="newFolder.value=''">
-                            <mat-icon>close</mat-icon>
-                            </button>
-                            <mat-error *ngIf="folderNameFormControl.hasError('required')">
-                                Folder name is <strong>required</strong>
-                            </mat-error>
-                        </mat-form-field>
-                        
-                    </div>
-                    
-                    
-                </mat-menu>
-                <mat-menu  #file="matMenu">
-                    <div (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
-                        <button 
-                        
-                        [disabled] = "newFile.value == ''" class="saveButton" 
-                        (click)="save(newFile.value,'file');newFile.value = ''"
-                        >
-                            <i class="material-icons">
-                                save
-                            </i>
-                        </button>
-                        <mat-form-field  class="example-full-width" 
-                            [style.padding] = "'0px 5px'" 
-                            [style.fontSize] = "'10px'"
-                            [style.width] = "'60%'">
-                            <input #newFile matInput placeholder="File Name"  [formControl]="fileNameFormControl">
-                            <button mat-button *ngIf="newFile.value" matSuffix mat-icon-button aria-label="Clear" (click)="newFile.value=''">
-                            <mat-icon>close</mat-icon>
-                            </button>
-                            <mat-error *ngIf="fileNameFormControl.hasError('required')">
-                                File name is <strong>required</strong>
-                            </mat-error>
-                        </mat-form-field>
-                        
-                    </div>
-                </mat-menu>
-
-
-                
-          </div>
-          <div class="content" style="position:relative">
-            <!-- <div class="bar">
-                <section class="example-section">
-                    <mat-checkbox color="warn" [(ngModel)]="checked">
-                        <button class="btn">
-                          <i class="material-icons">
-                              delete_forever
-                          </i>
-                        </button>
-                    </mat-checkbox>
-                </section>
-                
           
-            </div> -->
-            <div id="title">
-              <div>
-                
-              </div>
-              <div id="column_filename">
-                  File Name
-              </div>
-              <div class="column_name">
-                  File Number
-              </div>
-              <div class="column_name">
-                  Editor
-              </div>
-              <div class="column_name">
-                  Creation Date
-              </div>
-              <div></div>
-            </div>
-            <div id="fileContainer" >
-                <div id = "selectedArea" style="position: absolute;
-                background-color: #d7d7d7;
-                border: 1px solid #9b9b9b;
-                top: 100px;
-                left: 100px;
-                padding: 5px 10px;
-                border-radius: 5px;
-                display: none">
-                    <ng-container *ngFor = "let element of selectedElements">
-                        <div style="
-                            padding: 10px 0;
-                        ">
-                                <span>
-                                    <i [attr.data-targetId] = "element.id" class="material-icons" style="font-size: 15px">
-                                       {{element.type}} 
-                                    </i>
-                                </span>
-                                <span>
-                                       {{element.name}}
-                                </span>
-                            </div>
-                    </ng-container>
-                    
-                    
-                </div>
-              
-              <ng-container *ngIf = "dataMapping">
-                  <ng-container *ngIf = "dataMapping[currentLocation].previous != ''">
-                      <div class="unselected ">
-                        <div [attr.data-targetId] = "dataMapping[currentLocation].previous"></div>
-                        <p [attr.data-targetId] = "dataMapping[currentLocation].previous" class="previous" (dblclick) = "changeFolder(dataMapping[currentLocation].previous)">
-                            <i class="far fa-folder-open"></i>../
-                        </p>
-                        
-                      </div>
-                  </ng-container>
-                  <div [id]="data.id" 
-                      [ngClass]="{'unselected': !this.checkBoxGroup[data.id],  
-                                     'selected': this.checkBoxGroup[data.id]}" 
-                      [class] = "data.type"
-                         #move 
-                      [ngSwitch]="data.type" 
-                      *ngFor = "let data of dataMapping[currentLocation].datas;
-                                  let i = index;" 
-                      [attr.data-id] = data.id
-                      [attr.data-targetName]  = "data.name"
-                  >
-                      
-                      <ng-container *ngSwitchCase = "'folder'">
-                          <mat-checkbox #checkbox [id] = "data.id" color="warn" (change) = "check($event)" [(ngModel)]="checkBoxGroup[data.id]"></mat-checkbox>
-                          <app-dashboard-folder [attr.data-targetId]  = "data.name" 
-                          [targetId] = "data.id" 
-                          [folderName] = "data.name" 
-                          [folderId] = "data.id" 
-                          [editing] = "editing"
-                          (preventMove) = "preventMoveing($event)"
-                          (changeFolder) = "changeFolder($event)" ></app-dashboard-folder>
-                          <div [attr.data-targetId] = "data.id" [attr.data-targetName] = "data.name" style="text-align: center;">{{dataMapping[data.name].datas.length}}</div>
-                          <div [attr.data-targetId] = "data.id" [attr.data-targetName] = "data.name" style="text-align: center;">{{data.editor}}</div>
-                          <div [attr.data-targetId] = "data.id" [attr.data-targetName] = "data.name" style="text-align: center;">{{data.EDate}}</div>
-                          
-                          <div [attr.data-targetName] = "data.name">
-                              <button class="btn">
-                                  <i class="material-icons" (click) = "deleteElement(data.name,'folder')">
-                                      delete_forever
-                                  </i>
-                              </button>
-                          </div>
-                        </ng-container>
-                      <ng-container *ngSwitchCase = "'dashboard'">
-                          <mat-checkbox #checkbox [id] = "data.id" color="warn" (change) = "check($event)" [(ngModel)]="checkBoxGroup[data.id]"></mat-checkbox>
-                          <app-dashboard-file 
-                          [fileId] = "data.id" 
-                          [fileName] = "data.name" 
-                          [editing] = "editing"
-                          (preventMove) = "preventMoveing($event)"></app-dashboard-file>
-                          <div style="text-align: center;">1</div>
-                          <div style="text-align: center;">{{data.editor}}</div>
-                          <div style="text-align: center;">{{data.EDate}}</div>
-                          
-                          <div>
-                              <button class="btn">
-                                  <i class="material-icons" (click) = "deleteElement(data.name,'file')">
-                                      delete_forever
-                                  </i>
-                              </button>
-                          </div>
-                      </ng-container>
+          <ng-container *ngIf = "dataMapping">
+              <ng-container *ngIf = "dataMapping[currentLocation].previous != ''">
+                  <div [ngStyle] = "{'opacity':(editing? '0.5':'1')}" id = "previous" [attr.data-targetname] = "dataMapping[currentLocation].previous" class="folder unselected ">
+                    <div [attr.data-targetId] = "'previous'" class="previous" ></div>
+                    <p [attr.data-targetId] = "'previous'" class="previous" (dblclick) = "editing ?false:changeFolder(dataMapping[currentLocation].previous)">
+                        <i class="far fa-folder-open"></i>../
+                    </p>
                     
                   </div>
               </ng-container>
-          
-            </div>
-          </div>
-        </mat-tab>
-        <mat-tab label="Second">Content 2</mat-tab>
-        <mat-tab label="Third">Content 3</mat-tab>
-    </mat-tab-group>
+              <div [id]="data.id" 
+                  [ngClass]="{'unselected': !this.checkBoxGroup[data.id],  
+                                 'selected': this.checkBoxGroup[data.id]}" 
+                  [class] = "data.type"
+                     #move 
+                  [ngSwitch]="data.type" 
+                  *ngFor = "let data of dataMapping[currentLocation].datas;
+                              let i = index;" 
+                  [attr.data-id] = data.id
+                  [attr.data-targetname]  = "data.name"
+                  
+              >
+                  
+                  <ng-container *ngSwitchCase = "'folder'">
+                      <mat-checkbox [disabled] = "editing" #checkbox [id] = "data.id" color="warn" (change) = "check($event)" [(ngModel)]="checkBoxGroup[data.id]"></mat-checkbox>
+                      <app-dashboard-folder [attr.data-targetId]  = "data.id" 
+                      [targetId] = "data.id" 
+                      [folderName] = "data.name" 
+                      [folderId] = "data.id" 
+                      [editing] = "editing"
+                      (preventMove) = "preventMoveing($event)"
+                      (changeFolder) = "changeFolder($event)" ></app-dashboard-folder>
+                      <div [attr.data-targetId] = "data.id" [attr.data-targetname] = "data.name" style="text-align: center;">{{dataMapping[data.name].datas.length}}</div>
+                      <div [attr.data-targetId] = "data.id" [attr.data-targetname] = "data.name" style="text-align: center;">{{data.editor}}</div>
+                      <div [attr.data-targetId] = "data.id" [attr.data-targetname] = "data.name" style="text-align: center;">{{data.EDate}}</div>
+                      
+                      <div [attr.data-targetname] = "data.name">
+                          <button [disabled] = "editing" class="btn">
+                              <i class="material-icons" (click) = "editing ?false:deleteElement(data.name,'folder')">
+                                  delete_forever
+                              </i>
+                          </button>
+                      </div>
+                    </ng-container>
+                  <ng-container *ngSwitchCase = "'dashboard'">
+                      <mat-checkbox [disabled] = "editing" #checkbox [id] = "data.id" color="warn" (change) = "check($event)" [(ngModel)]="checkBoxGroup[data.id]"></mat-checkbox>
+                      <app-dashboard-file 
+                      [fileId] = "data.id" 
+                      [fileName] = "data.name" 
+                      [editing] = "editing"
+                      (preventMove) = "preventMoveing($event)"></app-dashboard-file>
+                      <div style="text-align: center;">1</div>
+                      <div style="text-align: center;">{{data.editor}}</div>
+                      <div style="text-align: center;">{{data.EDate}}</div>
+                      
+                      <div>
+                          <button [disabled] = "editing" class="btn">
+                              <i class="material-icons" (click) = "editing ?false:deleteElement(data.name,'file')">
+                                  delete_forever
+                              </i>
+                          </button>
+                      </div>
+                  </ng-container>
+                
+              </div>
+          </ng-container>
+      
+        </div>
+    </div>
 
   
   
