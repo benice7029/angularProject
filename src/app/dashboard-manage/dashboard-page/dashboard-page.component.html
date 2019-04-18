@@ -164,7 +164,7 @@
 
                 
           </div>
-          <div class="content" >
+          <div class="content" style="position:relative">
             <!-- <div class="bar">
                 <section class="example-section">
                     <mat-checkbox color="warn" [(ngModel)]="checked">
@@ -196,38 +196,31 @@
               </div>
               <div></div>
             </div>
-            <div id="fileContainer" style="position:relative">
-                <div style="position: absolute;
+            <div id="fileContainer" >
+                <div id = "selectedArea" style="position: absolute;
                 background-color: #d7d7d7;
                 border: 1px solid #9b9b9b;
                 top: 100px;
                 left: 100px;
                 padding: 5px 10px;
-                border-radius: 5px;">
-                    <div style="
-                    padding: 10px 0;
-                ">
-                        <span>
-                            <i [attr.data-targetId] = "targetId" class="material-icons" style="font-size: 15px">
-                                folder
-                            </i>
-                        </span>
-                        <span>
-                            Folder 1
-                        </span>
-                    </div>
-                    <div style="
-                    padding: 10px 0;
-                ">
-                        <span>
-                            <i [attr.data-targetId] = "targetId" class="material-icons" style="font-size: 15px">
-                                folder
-                            </i>
-                        </span>
-                        <span>
-                            Folder 1ZxXXsxdsasd
-                        </span>
-                    </div>
+                border-radius: 5px;
+                display: none">
+                    <ng-container *ngFor = "let element of selectedElements">
+                        <div style="
+                            padding: 10px 0;
+                        ">
+                                <span>
+                                    <i [attr.data-targetId] = "element.id" class="material-icons" style="font-size: 15px">
+                                       {{element.type}} 
+                                    </i>
+                                </span>
+                                <span>
+                                       {{element.name}}
+                                </span>
+                            </div>
+                    </ng-container>
+                    
+                    
                 </div>
               
               <ng-container *ngIf = "dataMapping">
@@ -249,7 +242,7 @@
                       *ngFor = "let data of dataMapping[currentLocation].datas;
                                   let i = index;" 
                       [attr.data-id] = data.id
-                      [attr.data-targetId]  = "data.name"
+                      [attr.data-targetName]  = "data.name"
                   >
                       
                       <ng-container *ngSwitchCase = "'folder'">
@@ -261,11 +254,11 @@
                           [editing] = "editing"
                           (preventMove) = "preventMoveing($event)"
                           (changeFolder) = "changeFolder($event)" ></app-dashboard-folder>
-                          <div [attr.data-targetId] = "data.name" style="text-align: center;">{{dataMapping[data.name].datas.length}}</div>
-                          <div [attr.data-targetId] = "data.name" style="text-align: center;">{{data.editor}}</div>
-                          <div [attr.data-targetId] = "data.name" style="text-align: center;">{{data.EDate}}</div>
+                          <div [attr.data-targetName] = "data.name" style="text-align: center;">{{dataMapping[data.name].datas.length}}</div>
+                          <div [attr.data-targetName] = "data.name" style="text-align: center;">{{data.editor}}</div>
+                          <div [attr.data-targetName] = "data.name" style="text-align: center;">{{data.EDate}}</div>
                           
-                          <div [attr.data-targetId] = "data.name">
+                          <div [attr.data-targetName] = "data.name">
                               <button class="btn">
                                   <i class="material-icons" (click) = "deleteElement(data.name,'folder')">
                                       delete_forever
@@ -273,7 +266,7 @@
                               </button>
                           </div>
                         </ng-container>
-                      <ng-container *ngSwitchCase = "'file'">
+                      <ng-container *ngSwitchCase = "'dashboard'">
                           <mat-checkbox #checkbox [id] = "data.id" color="warn" (change) = "check($event)" [(ngModel)]="checkBoxGroup[data.id]"></mat-checkbox>
                           <app-dashboard-file 
                           [fileId] = "data.id" 

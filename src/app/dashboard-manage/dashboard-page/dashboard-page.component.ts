@@ -46,7 +46,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
     files: ['Folder1', 'Folder2', 'Folder3']
     },
     {
-      type: 'File',
+      type: 'dashboard',
       files: ['file1', 'file2', 'file3']
     }
   ];
@@ -63,7 +63,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
 
   selectedElementEvent$;
 
-  selectedElement: Array<any>;
+  selectedElements: Array<any>;
   
 
   dataMapping;// folder and dashboard data
@@ -176,7 +176,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
 
     this.currentLocationArray = new Array();
 
-    this.selectedElement = new Array();
+    this.selectedElements = new Array();
 
     this.fileGroupOptions = this.fileForm.get('fileGroup')!.valueChanges
       .pipe(
@@ -209,7 +209,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
                 {
                   id:'2',
                   name:'File1',
-                  type: 'file',
+                  type: 'dashboard',
                   fileNumber: '1',
                   editor: 'Ben',
                   EDate: '2019/04/10'
@@ -217,7 +217,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
                 {
                   id:'3',
                   name:'File2',
-                  type: 'file',
+                  type: 'dashboard',
                   fileNumber: '1',
                   editor: 'Ben',
                   EDate: '2019/04/10'
@@ -225,7 +225,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
                 {
                   id:'9',
                   name:'File98',
-                  type: 'file',
+                  type: 'dashboard',
                   fileNumber: '1',
                   editor: 'Ben',
                   EDate: '2019/04/10'
@@ -233,7 +233,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
                 {
                   id:'10',
                   name:'File14',
-                  type: 'file',
+                  type: 'dashboard',
                   fileNumber: '1',
                   editor: 'Ben',
                   EDate: '2019/04/10'
@@ -241,7 +241,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
                 {
                   id:'11',
                   name:'File233',
-                  type: 'file',
+                  type: 'dashboard',
                   fileNumber: '1',
                   editor: 'Ben',
                   EDate: '2019/04/10'
@@ -269,7 +269,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
               {
                 id:'6',
                 name:'File3',
-                type: 'file',
+                type: 'dashboard',
                 fileNumber: '1',
                 editor: 'Ben',
                 EDate: '2019/04/10'
@@ -277,7 +277,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
               {
                 id:'7',
                 name:'File4',
-                type: 'file',
+                type: 'dashboard',
                 fileNumber: '1',
                 editor: 'Ben',
                 EDate: '2019/04/10'
@@ -285,7 +285,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
               {
                 id:'8',
                 name:'File5',
-                type: 'file',
+                type: 'dashboard',
                 fileNumber: '1',
                 editor: 'Ben',
                 EDate: '2019/04/10'
@@ -329,50 +329,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
     this.mouseUp$ = fromEvent(document,'mouseup')
     this.mouseMove$ = fromEvent(document, 'mousemove')
 
-    this.selectedElementEvent$ = 
-    fromEvent(document.getElementsByClassName('selected'),'mousedown')
-    .pipe(
-          
-      map(() =>
-        this.mouseMove$
-        .pipe(
-          
-          tap(() => {
-            console.log('moving...')
-          }),
-          
-          takeUntil(this.mouseUp$)
-        )
-        .subscribe(
-          (e)=> {
-            console.log('e can get mouse\'s clientX, clientY...etc')
-              // this.move.toArray()[index].nativeElement.style.position = 'absolute';
-              // this.move.toArray()[index].nativeElement.style.width = '75vw' ;
-              // this.move.toArray()[index].nativeElement.style.top = (e.clientY -130 ) + 'px'
-              // this.move.toArray()[index].nativeElement.style.left = e.clientX  +10 + 'px'
-              
-            
-            
-            //console.log(e)
-          }, // next
-          () => {}, // error
-          () => {   // complete
-            console.log('mouse up')
-
-          }
-          
-        )
-      )
-    ).subscribe(
-      (e) => {
-        
-        console.log('mouse down');
-      },
-      () => {}, // error
-      () => {   // complete
-        console.log('complete')
-      }
-    )
+    
     
 
     this.surveyForm = new FormGroup({
@@ -385,6 +342,77 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
     });
   }
 
+  selectedObservable_subscribe(){
+    let waitElementCreated = 
+      setInterval(() => {
+        if(this.selectedElements.length == document.getElementsByClassName('selected').length){
+          this.selectedElementEvent$ = 
+          fromEvent(document.getElementsByClassName('selected'),'mousedown')
+          .pipe(
+                
+            map(() =>
+              this.mouseMove$
+              .pipe(
+                
+                tap(() => {
+                  console.log('moving...')
+                }),
+                
+                takeUntil(this.mouseUp$)
+              )
+              .subscribe(
+                (e)=> {
+                  let selectedArea = document.getElementById('selectedArea');
+                  console.log('e can get mouse\'s clientX, clientY...etc')
+                  
+                  selectedArea.style.top = (e.clientY -330 ) + 'px'
+                  selectedArea.style.left = e.clientX  +10 + 'px'
+                  selectedArea.style.display = 'unset'
+                    // this.move.toArray()[index].nativeElement.style.position = 'absolute';
+                    // this.move.toArray()[index].nativeElement.style.width = '75vw' ;
+                    // this.move.toArray()[index].nativeElement.style.top = (e.clientY -130 ) + 'px'
+                    // this.move.toArray()[index].nativeElement.style.left = e.clientX  +10 + 'px'
+                    
+                  
+                  
+                  //console.log(e)
+                }, // next
+                () => {}, // error
+                () => {   // complete
+                  console.log('mouse up')
+                  Array.from(document.getElementsByClassName('folder')).forEach(element => {
+                    if(element.classList.contains('canStore'))
+                      element.classList.remove('canStore')
+                  });
+                  document.getElementById('selectedArea').style.display = 'none'
+                }
+                
+              )
+            )
+          ).subscribe(
+            (e) => {
+              
+              console.log('mouse down');
+              Array.from(document.getElementsByClassName('folder')).forEach(element => {
+                if(element.classList.contains('unselected'))
+                  element.classList.add('canStore')
+              });
+            },
+            () => {}, // error
+            () => {   // complete
+              console.log('complete')
+            }
+          )
+          clearInterval(waitElementCreated);
+        }
+      },200)
+    
+  }
+
+  selectedObservable_unsubscribe(){
+    if(this.selectedElementEvent$ != undefined)
+      this.selectedElementEvent$.unsubscribe();
+  }
 
 
   changeFolder(foldername){
@@ -479,7 +507,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   check(event){
-    
+    this.selectedObservable_unsubscribe();
     document.getElementById(event.source.id).classList.remove('unselected');
     document.getElementById(event.source.id).classList.add('selected')
     this.checked = false;
@@ -490,17 +518,21 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
     if(this.checkBoxGroup[event.source.id]){
       console.log('checked!')
       this.checked = true;
-      this.selectedElement.push({
+      console.log(document.getElementById(event.source.id).getAttribute('data-targetName'))
+      this.selectedElements.push({
         id: event.source.id,
+        name: document.getElementById(event.source.id).getAttribute('data-targetName'),
         type: document.getElementById(event.source.id).classList[0]
       })
     }else{
-      this.selectedElement = this.selectedElement.filter((value) => {
+      this.selectedElements = this.selectedElements.filter((value) => {
         if(value.id != event.source.id )
           return true;
       })
     }
-    console.log(this.selectedElement)
+
+    
+    this.selectedObservable_subscribe();
     
   }
 
