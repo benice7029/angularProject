@@ -248,15 +248,15 @@
                       <ng-container *ngSwitchCase = "'folder'">
                           <mat-checkbox #checkbox [id] = "data.id" color="warn" (change) = "check($event)" [(ngModel)]="checkBoxGroup[data.id]"></mat-checkbox>
                           <app-dashboard-folder [attr.data-targetId]  = "data.name" 
-                          [targetId] = "data.name" 
+                          [targetId] = "data.id" 
                           [folderName] = "data.name" 
                           [folderId] = "data.id" 
                           [editing] = "editing"
                           (preventMove) = "preventMoveing($event)"
                           (changeFolder) = "changeFolder($event)" ></app-dashboard-folder>
-                          <div [attr.data-targetName] = "data.name" style="text-align: center;">{{dataMapping[data.name].datas.length}}</div>
-                          <div [attr.data-targetName] = "data.name" style="text-align: center;">{{data.editor}}</div>
-                          <div [attr.data-targetName] = "data.name" style="text-align: center;">{{data.EDate}}</div>
+                          <div [attr.data-targetId] = "data.id" [attr.data-targetName] = "data.name" style="text-align: center;">{{dataMapping[data.name].datas.length}}</div>
+                          <div [attr.data-targetId] = "data.id" [attr.data-targetName] = "data.name" style="text-align: center;">{{data.editor}}</div>
+                          <div [attr.data-targetId] = "data.id" [attr.data-targetName] = "data.name" style="text-align: center;">{{data.EDate}}</div>
                           
                           <div [attr.data-targetName] = "data.name">
                               <button class="btn">

@@ -65,6 +65,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
 
   selectedElements: Array<any>;
   
+  targetFolder: string;
 
   dataMapping;// folder and dashboard data
 
@@ -327,6 +328,9 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
   ngAfterViewInit(): void {
 
     this.mouseUp$ = fromEvent(document,'mouseup')
+
+
+
     this.mouseMove$ = fromEvent(document, 'mousemove')
 
     
@@ -354,31 +358,34 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
               this.mouseMove$
               .pipe(
                 
-                tap(() => {
-                  console.log('moving...')
+                tap((e: MouseEvent) => {
+                  let element = e.target as HTMLElement;
+                  this.targetFolder = element.dataset.targetid;
                 }),
                 
-                takeUntil(this.mouseUp$)
+                takeUntil(this.mouseUp$),
+                
               )
               .subscribe(
                 (e)=> {
                   let selectedArea = document.getElementById('selectedArea');
-                  console.log('e can get mouse\'s clientX, clientY...etc')
                   
                   selectedArea.style.top = (e.clientY -330 ) + 'px'
                   selectedArea.style.left = e.clientX  +10 + 'px'
                   selectedArea.style.display = 'unset'
-                    // this.move.toArray()[index].nativeElement.style.position = 'absolute';
-                    // this.move.toArray()[index].nativeElement.style.width = '75vw' ;
-                    // this.move.toArray()[index].nativeElement.style.top = (e.clientY -130 ) + 'px'
-                    // this.move.toArray()[index].nativeElement.style.left = e.clientX  +10 + 'px'
-                    
                   
-                  
-                  //console.log(e)
                 }, // next
                 () => {}, // error
                 () => {   // complete
+                  let ele = document.getElementById(this.targetFolder);
+                  if(ele != undefined){
+                    if(ele.classList.contains('canStore')){
+                      console.log(this.selectedElements)
+                      console.log(`save to ${ele.getAttribute('data-targetname')}`)
+                    }
+                  }
+                  
+
                   console.log('mouse up')
                   Array.from(document.getElementsByClassName('folder')).forEach(element => {
                     if(element.classList.contains('canStore'))
@@ -430,6 +437,8 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
     
     this.reCheckElement(foldername);
 
+    //clear selected elements
+    this.selectedElements = new Array();
     
     
   }
