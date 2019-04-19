@@ -1,15 +1,16 @@
 <!-- [attr.data-targetId] = "targetId" 
      It's a identification for moving file or folder to target folder   -->
 <p [ngStyle] = "{'opacity':(editing&&!canEdit? '0.5':'1')}" #f [attr.data-targetId] = "targetId" >
-    <button [disabled] = "editing" [attr.data-targetId] = "targetId" *ngIf = "!canEdit" class="btn" (click) = "edit()">
-        <i [attr.data-targetId] = "targetId" class="material-icons">edit</i>
+    <button title="Edit name" [disabled] = "editing" [attr.data-targetId] = "targetId" 
+            *ngIf = "!canEdit" class="btn" (click) = "edit()">
+        <i  [attr.data-targetId] = "targetId" class="material-icons">edit</i>
     </button>
-    <button [attr.data-targetId] = "targetId" *ngIf = "canEdit" class="btn" (click) = "edit()">
+    <button title="Save" [attr.data-targetId] = "targetId" *ngIf = "canEdit" class="btn" (click) = "edit()">
       <i [attr.data-targetId] = "targetId" class="material-icons">
         save
       </i>
     </button>
-  <i [attr.data-targetId] = "targetId" class="material-icons" style="font-size: 15px">
+  <i [attr.data-targetId] = "targetId" class="material-icons">
     folder
   </i>
   <span [attr.data-targetId] = "targetId" *ngIf = "!canEdit">{{folderName}}</span>

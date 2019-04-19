@@ -1,13 +1,13 @@
 <p [ngStyle] = "{'opacity':(editing&&!canEdit? '0.5':'1')}">
-      <button [disabled] = "editing"  *ngIf = "!canEdit" class="btn" (click) = "edit()">
+      <button title="Edit name" [disabled] = "editing"  *ngIf = "!canEdit" class="btn" (click) = "edit()">
         <i class="material-icons">edit</i>
       </button>
-      <button *ngIf = "canEdit" class="btn" (click) = "edit()">
+      <button title="Save" *ngIf = "canEdit" class="btn" (click) = "edit()">
         <i class="material-icons">
           save
         </i>
       </button>
-  <i class="material-icons" style="font-size: 15px">
+  <i class="material-icons" >
     dashboard
   </i>
   <span *ngIf = "!canEdit">{{fileName}}</span>

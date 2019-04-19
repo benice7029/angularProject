@@ -112,19 +112,32 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
         datas:[]
 
       }
+      this.dataMapping[this.currentLocation]['datas']
+      = [ {
+            id:this.id ++ + '',
+            name:newElement,
+            type: type,
+            fileNumber: type == 'folder' ? '0' : '1',
+            editor: 'Ben',
+            EDate: '2019/04/10'
+          }
+          ,...this.dataMapping[this.currentLocation]['datas']
+        ]
+    }else{
+      this.dataMapping[this.currentLocation]['datas']
+      .push(
+        {
+          id:this.id ++ + '',
+          name:newElement,
+          type: type,
+          fileNumber: type == 'folder' ? '0' : '1',
+          editor: 'Ben',
+          EDate: '2019/04/10'
+        }
+      )
     }
 
-    this.dataMapping[this.currentLocation]['datas']
-    .push(
-      {
-        id:this.id ++ + '',
-        name:newElement,
-        type: type,
-        fileNumber: type == 'folder' ? '0' : '1',
-        editor: 'Ben',
-        EDate: '2019/04/10'
-      }
-    )
+    
     this.reCheckElement(this.currentLocation);
   }
 
