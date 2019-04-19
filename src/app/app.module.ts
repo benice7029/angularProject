@@ -12,6 +12,7 @@ import { AboutComponent } from './about/about.component';
 import { DashboardModule } from './dashboard-manage/dashboard/dashboard.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SharedModule } from './shared/shared.module';
+import { DuplicateNameDirective } from './dashboard-manage/shared/duplicate-name.directive';
 
 
 @NgModule({
@@ -21,7 +22,8 @@ import { SharedModule } from './shared/shared.module';
     NavbarComponent,
     ColorfulDirective,
     BeautyStyleDirective,
-    AboutComponent
+    AboutComponent,
+    DuplicateNameDirective
   ],
   imports: [
     BrowserModule,

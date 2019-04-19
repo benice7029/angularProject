@@ -6,6 +6,9 @@
       <a routerLink="/about">About</a>
   </span>
   <span>
-    <a routerLink="/dashboardManage">DashboardManage</a>
+    <a [routerLink]="['/dashboardManage',{id:123}]">DashboardManage</a>
+  </span>
+  <span>
+    <a [routerLink]="['/dashboardManage',{id:456}]">DashboardManage2</a>
   </span>
 </div>

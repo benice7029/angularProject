@@ -177,7 +177,7 @@
               Editor
           </div>
           <div class="column_name">
-              Creation Date
+              Modified  
           </div>
           <div></div>
         </div>
@@ -243,47 +243,39 @@
                   [attr.data-targetname]  = "data.name"
                   
               >
-                  
-                  <ng-container *ngSwitchCase = "'folder'">
-                      <mat-checkbox [disabled] = "editing" #checkbox [id] = "data.id" color="warn" (change) = "check($event)" [(ngModel)]="checkBoxGroup[data.id]"></mat-checkbox>
-                      <app-dashboard-folder [attr.data-targetId]  = "data.id" 
-                      [targetId] = "data.id" 
-                      [folderName] = "data.name" 
-                      [folderId] = "data.id" 
-                      [editing] = "editing"
-                      (preventMove) = "preventMoveing($event)"
-                      (changeFolder) = "changeFolder($event)" ></app-dashboard-folder>
-                      <div [attr.data-targetId] = "data.id" [attr.data-targetname] = "data.name" style="text-align: center;">{{dataMapping[data.name].datas.length}}</div>
-                      <div [attr.data-targetId] = "data.id" [attr.data-targetname] = "data.name" style="text-align: center;">{{data.editor}}</div>
-                      <div [attr.data-targetId] = "data.id" [attr.data-targetname] = "data.name" style="text-align: center;">{{data.EDate}}</div>
-                      
-                      <div [attr.data-targetname] = "data.name">
-                          <button [disabled] = "editing" class="btn">
-                              <i class="material-icons" (click) = "editing ?false:deleteElement(data.name,'folder')">
-                                  delete_forever
-                              </i>
-                          </button>
-                      </div>
-                  </ng-container>
-                  <ng-container *ngSwitchCase = "'dashboard'">
-                      <mat-checkbox [disabled] = "editing" #checkbox [id] = "data.id" color="warn" (change) = "check($event)" [(ngModel)]="checkBoxGroup[data.id]"></mat-checkbox>
-                      <app-dashboard-file 
+              <mat-checkbox [disabled] = "editing" #checkbox [id] = "data.id" color="warn" (change) = "check($event.source.id)" [(ngModel)]="checkBoxGroup[data.id]"></mat-checkbox>
+              
+              <ng-container *ngSwitchCase = "'folder'">
+                <app-dashboard-folder [attr.data-targetId]  = "data.id" 
+                                [targetId] = "data.id" 
+                                [folderName] = "data.name" 
+                                [folderId] = "data.id" 
+                                [editing] = "editing"
+                                [currentLocationFiles] = "dataMapping[currentLocation].datas"
+                                (preventMove) = "preventMoveing($event)"
+                                (changeFolder) = "changeFolder($event)" >
+                </app-dashboard-folder>
+              </ng-container>
+              <ng-container *ngSwitchCase = "'dashboard'">
+                <app-dashboard-file 
                       [fileId] = "data.id" 
                       [fileName] = "data.name" 
                       [editing] = "editing"
-                      (preventMove) = "preventMoveing($event)"></app-dashboard-file>
-                      <div style="text-align: center;">1</div>
-                      <div style="text-align: center;">{{data.editor}}</div>
-                      <div style="text-align: center;">{{data.EDate}}</div>
-                      
-                      <div>
-                          <button [disabled] = "editing" class="btn">
-                              <i class="material-icons" (click) = "editing ?false:deleteElement(data.name,'file')">
-                                  delete_forever
-                              </i>
-                          </button>
-                      </div>
-                  </ng-container>
+                      (preventMove) = "preventMoveing($event)">
+                </app-dashboard-file>
+              </ng-container>
+              <div [attr.data-targetId] = "data.id" [attr.data-targetname] = "data.name" style="text-align: center;">{{dataMapping[data.name] != undefined ? dataMapping[data.name].datas.length : '1'}}</div>
+              <div [attr.data-targetId] = "data.id" [attr.data-targetname] = "data.name" style="text-align: center;">{{data.editor}}</div>
+              <div [attr.data-targetId] = "data.id" [attr.data-targetname] = "data.name" style="text-align: center;">{{data.EDate}}</div>
+              
+              <div [attr.data-targetname] = "data.name">
+                  <button [disabled] = "editing" class="btn">
+                      <i class="material-icons" (click) = "editing ?false:deleteElement(data.name,data.type)">
+                          delete_forever
+                      </i>
+                  </button>
+              </div>
+                  
                 
               </div>
           </ng-container>
@@ -298,3 +290,22 @@
   
 </div>
 
+<ng-template #Folder >
+    <app-dashboard-folder [attr.data-targetId]  = "data.id" 
+                      [targetId] = "data.id" 
+                      [folderName] = "data.name" 
+                      [folderId] = "data.id" 
+                      [editing] = "editing"
+                      (preventMove) = "preventMoveing($event)"
+                      (changeFolder) = "changeFolder($event)" >
+    </app-dashboard-folder>
+</ng-template>
+
+<ng-template #Dashboard >
+    <app-dashboard-file 
+                      [fileId] = "data.id" 
+                      [fileName] = "data.name" 
+                      [editing] = "editing"
+                      (preventMove) = "preventMoveing($event)">
+    </app-dashboard-file>
+</ng-template>

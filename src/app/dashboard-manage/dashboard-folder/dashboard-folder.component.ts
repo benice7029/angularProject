@@ -2,6 +2,7 @@ import { Component, OnInit, Output, EventEmitter, ViewChild, ElementRef, AfterVi
 import { fromEvent } from 'rxjs';
 import { merge, bufferTime, filter } from 'rxjs/operators';
 import { FormControl, Validators } from '@angular/forms';
+import { forbiddenNameValidator } from '../shared/duplicate-name.directive';
 
 @Component({
   selector: 'app-dashboard-folder',
@@ -20,15 +21,15 @@ export class DashboardFolderComponent implements OnInit, OnChanges, AfterViewIni
 
   @Input('editing') editing: boolean;
 
+  @Input('currentLocationFiles') currentLocationFiles;
+
   @Output() preventMove = new EventEmitter();
 
   @ViewChild('f') private folder: ElementRef;
 
   changeFolder$;
 
-  folderNameFormControl = new FormControl('', [
-    Validators.required
-  ]);
+  folderNameFormControl ;
 
   canEdit: boolean = false;
 
@@ -67,7 +68,10 @@ export class DashboardFolderComponent implements OnInit, OnChanges, AfterViewIni
 
   ngAfterViewInit(): void {
 
-    
+    this.folderNameFormControl = new FormControl('', [
+      Validators.required,
+      forbiddenNameValidator(this.currentLocationFiles, this.folderName)
+    ]);
 
   }
 
@@ -82,6 +86,8 @@ export class DashboardFolderComponent implements OnInit, OnChanges, AfterViewIni
       );
     }else{
       if(this.folderName.trim() == '')
+        return false;
+      if(this.folderNameFormControl.hasError('forbiddenNameValidator'))
         return false;
       /**
        * check if folder name is duplicate or not

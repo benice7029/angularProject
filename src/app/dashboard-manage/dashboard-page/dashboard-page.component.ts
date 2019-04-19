@@ -41,19 +41,22 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
   /**
    * for auto complete's select option data
    */
-  fileGroups: FileType[] = [{
-    type: 'Folder',
-    files: ['Folder1', 'Folder2', 'Folder3']
+  fileGroups: FileType[] = [
+    {
+      type: 'Folder',
+      files: ['Folder1', 'Folder2', 'Folder3']
     },
     {
       type: 'dashboard',
-      files: ['file1', 'file2', 'file3']
+      files: ['File1', 'File2', 'File3']
     }
   ];
 
   fileGroupOptions: Observable<FileType[]>;
   
   @ViewChildren('move') move: QueryList<any>;
+
+  mouseClick$;
 
   //mouse move until mouse up: observable
   mouseUp$;
@@ -149,6 +152,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
       })
     }
     /**
+     * Http remind!
      * should send http delete dashboard / folder
      */
 
@@ -198,6 +202,8 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
 
     if(this.selectedElementEvent$ != undefined)
       this.selectedElementEvent$.unsubscribe();
+
+    this.mouseClickSelect_unsubscribe();
 
 
   }
@@ -358,12 +364,13 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
 
   ngAfterViewInit(): void {
 
-    this.mouseUp$ = fromEvent(document,'mouseup')
+    
 
-
+    this.mouseUp$ = fromEvent(document,'mouseup');
 
     this.mouseMove$ = fromEvent(document, 'mousemove')
 
+    this.mouseClickSelect_subscribe();
     
   }
 
@@ -434,7 +441,10 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
                         })
                         
                       })
+                      //mouseClickSelect will be unsubscribe in clearCheck
                       this.clearCheck();
+                      //re subscribe
+                      this.mouseClickSelect_subscribe();
                       
                       /**
                        * need to send http request to backend 
@@ -481,6 +491,27 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
 
+  mouseClickSelect_subscribe(){
+    this.mouseClick$ = 
+    fromEvent(document.body,'click')
+    .subscribe((e) => {
+      let ele = e.target as HTMLElement;
+      if(ele.dataset.targetid != undefined && ele.className != 'previous'){
+        console.log(e)
+        console.log(`choose ${ele.dataset.targetid}`);
+        this.checkBoxGroup[ele.dataset.targetid] = !this.checkBoxGroup[ele.dataset.targetid]
+        this.check(ele.dataset.targetid);
+      }
+      //console.log(e)
+    });
+  }
+
+  mouseClickSelect_unsubscribe(){
+    if(this.mouseClick$ != undefined)
+      this.mouseClick$.unsubscribe();
+  }
+
+
   changeFolder(foldername){
     
 
@@ -493,6 +524,9 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
       this.currentLocationArray = new Array();
     
     this.clearCheck();
+
+    //re subscribe
+    this.mouseClickSelect_subscribe();
     
     this.reCheckElement(foldername);
 
@@ -559,6 +593,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
       }
 
       this.reCheckElement(this.currentLocation);
+      this.mouseClickSelect_subscribe();
     }else{
 
       /**
@@ -575,25 +610,25 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
     
   }
 
-  check(event){
+  check(id){
     this.selectedObservable_unsubscribe();
-    document.getElementById(event.source.id).classList.remove('unselected');
-    document.getElementById(event.source.id).classList.add('selected')
+    document.getElementById(id).classList.remove('unselected');
+    document.getElementById(id).classList.add('selected')
     this.checked = false;
     for(let k in this.checkBoxGroup){
       if(this.checkBoxGroup[k])
         this.checked = true;
     }
-    if(this.checkBoxGroup[event.source.id]){
+    if(this.checkBoxGroup[id]){
       this.checked = true;
       this.selectedElements.push({
-        id: event.source.id,
-        name: document.getElementById(event.source.id).getAttribute('data-targetName'),
-        type: document.getElementById(event.source.id).classList[0]
+        id: id,
+        name: document.getElementById(id).getAttribute('data-targetName'),
+        type: document.getElementById(id).classList[0]
       })
     }else{
       this.selectedElements = this.selectedElements.filter((value) => {
-        if(value.id != event.source.id )
+        if(value.id != id )
           return true;
       })
     }
@@ -633,11 +668,14 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   clearCheck(){
-    this.selectedObservable_unsubscribe()
+    this.selectedObservable_unsubscribe();
+    this.mouseClickSelect_unsubscribe();
     this.checked = false;
+    console.log(this.checkBoxGroup)
     for(let k in this.checkBoxGroup){
       this.checkBoxGroup[k] = false;
     }
+    console.log(this.checkBoxGroup[1])
     //clear selected elements
     this.selectedElements = new Array();
     
