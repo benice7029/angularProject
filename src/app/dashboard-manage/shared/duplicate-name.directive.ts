@@ -2,15 +2,14 @@ import { Directive, Input } from '@angular/core';
 import { AbstractControl, ValidatorFn, NG_VALIDATORS } from '@angular/forms';
 import { FileType } from '../dashboard-page/dashboard-page.component';
 
-/** A hero's name can't match the given regular expression */
-export function forbiddenNameValidator(currentLocationFiles: Array<any>, currentName: string): ValidatorFn {
+export function forbiddenNameValidator(currentLocationFiles: Array<any>, currentName: string, type: string): ValidatorFn {
   return (control: AbstractControl): {[key: string]: any} | null => {
-    console.log(currentLocationFiles)
+    
     
     let sameName = false;
 
     currentLocationFiles.forEach((v) => {
-      if(v.name == control.value && control.value != currentName){
+      if(v.name == control.value && control.value != currentName && v.type == type){
         sameName = true ;
       }
     })

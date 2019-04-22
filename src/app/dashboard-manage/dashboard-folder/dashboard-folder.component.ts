@@ -53,8 +53,7 @@ export class DashboardFolderComponent implements OnInit, OnChanges, AfterViewIni
      * when @Input editing is true,
      * prevent change folder observable be emited. 
      */
-    //console.log(changes)
-    if(changes.editing.currentValue){
+    if(changes.editing != undefined && changes.editing.currentValue){
       //console.log("editing....");
       if(this.changeFolder$ != undefined)
         this.changeFolder$.unsubscribe();
@@ -63,6 +62,12 @@ export class DashboardFolderComponent implements OnInit, OnChanges, AfterViewIni
       this.changeFolderLocation();
       //console.log(this.changeFolder$)
     }
+
+
+    this.folderNameFormControl = new FormControl('', [
+      Validators.required,
+      forbiddenNameValidator(this.currentLocationFiles, this.folderName, 'folder')
+    ]);
       
   }
 
@@ -70,7 +75,7 @@ export class DashboardFolderComponent implements OnInit, OnChanges, AfterViewIni
 
     this.folderNameFormControl = new FormControl('', [
       Validators.required,
-      forbiddenNameValidator(this.currentLocationFiles, this.folderName)
+      forbiddenNameValidator(this.currentLocationFiles, this.folderName, 'folder')
     ]);
 
   }

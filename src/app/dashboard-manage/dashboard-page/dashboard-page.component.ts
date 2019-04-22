@@ -1,9 +1,10 @@
-import { Component, OnInit,  AfterViewInit, QueryList, ViewChildren, OnDestroy } from '@angular/core';
+import { Component, OnInit,  AfterViewInit, QueryList, ViewChildren, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { DashboardFolderComponent } from '../dashboard-folder/dashboard-folder.component';
 import { DashboardFileComponent } from '../dashboard-file/dashboard-file.component';
 import { fromEvent, zip, of, Observable, from } from 'rxjs';
 import { map, tap, takeUntil, bufferTime, filter, startWith, mergeAll, merge} from 'rxjs/operators';
 import { Validators, FormControl, FormBuilder, FormGroup } from '@angular/forms';
+import { forbiddenNameValidator } from '../shared/duplicate-name.directive';
 
 export interface FileType {
   type: string;
@@ -23,6 +24,8 @@ export const _filter = (opt: string[], value: string): string[] => {
   styleUrls: ['./dashboard-page.component.scss']
 })
 export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy {
+  
+
   
 
   fileForm: FormGroup = this.fb.group({
@@ -87,17 +90,33 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
    * reuse in dashboard-folder, dashboard-file for edit
    */
 
-   
+  @ViewChild('newFolder') private nfd: ElementRef;
+
+  @ViewChild('newFile') private nfl: ElementRef;
 
   folderNameFormControl = new FormControl('', [
-    Validators.required
-  ]);
+    Validators.required,
+    forbiddenNameValidator([], '', 'folder')
+  ]);;
   fileNameFormControl = new FormControl('', [
-    Validators.required
+    Validators.required,
+    forbiddenNameValidator([], '', 'dashboard')
   ]);
 
   //for testing...
   id:number = 99;
+
+  addNewEle(){
+
+    this.folderNameFormControl = new FormControl('', [
+      Validators.required,
+      forbiddenNameValidator(this.dataMapping[this.currentLocation].datas, this.nfd.nativeElement.value, 'folder')
+    ]);
+    this.fileNameFormControl = new FormControl('', [
+      Validators.required,
+      forbiddenNameValidator(this.dataMapping[this.currentLocation].datas, this.nfl.nativeElement.value, 'dashboard')
+    ]);
+  }
 
   save(newElement,type){
 
@@ -107,6 +126,14 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
      * should send request and get result from backend
      * for value of id
      */
+
+    // if(this.folderName.trim() == '')
+    //   return false;
+    if(this.folderNameFormControl.hasError('forbiddenNameValidator'))
+      return false;
+
+    if(this.fileNameFormControl.hasError('forbiddenNameValidator'))
+      return false;
 
     if(type == 'folder'){
       this.dataMapping[newElement] = 
@@ -240,7 +267,6 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
                   id:'1',
                   name:'Folder1',
                   type: 'folder',
-                  fileNumber: '5',
                   editor: 'Ben',
                   EDate: '2019/04/10'
                 },
@@ -248,7 +274,6 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
                   id:'2',
                   name:'File1',
                   type: 'dashboard',
-                  fileNumber: '1',
                   editor: 'Ben',
                   EDate: '2019/04/10'
                 },
@@ -256,7 +281,6 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
                   id:'3',
                   name:'File2',
                   type: 'dashboard',
-                  fileNumber: '1',
                   editor: 'Ben',
                   EDate: '2019/04/10'
                 },
@@ -264,7 +288,6 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
                   id:'9',
                   name:'File98',
                   type: 'dashboard',
-                  fileNumber: '1',
                   editor: 'Ben',
                   EDate: '2019/04/10'
                 },
@@ -272,7 +295,6 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
                   id:'10',
                   name:'File14',
                   type: 'dashboard',
-                  fileNumber: '1',
                   editor: 'Ben',
                   EDate: '2019/04/10'
                 },
@@ -280,7 +302,6 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
                   id:'11',
                   name:'File233',
                   type: 'dashboard',
-                  fileNumber: '1',
                   editor: 'Ben',
                   EDate: '2019/04/10'
                 }
@@ -292,7 +313,6 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
                 id:'4',
                 name:'Folder2',
                 type: 'folder',
-                fileNumber: '7',
                 editor: 'Ben',
                 EDate: '2019/04/10'
               },
@@ -300,7 +320,6 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
                 id:'5',
                 name:'Folder3',
                 type: 'folder',
-                fileNumber: '6',
                 editor: 'Ben',
                 EDate: '2019/04/10'
               },
@@ -308,7 +327,6 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
                 id:'6',
                 name:'File3',
                 type: 'dashboard',
-                fileNumber: '1',
                 editor: 'Ben',
                 EDate: '2019/04/10'
               },
@@ -316,7 +334,6 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
                 id:'7',
                 name:'File4',
                 type: 'dashboard',
-                fileNumber: '1',
                 editor: 'Ben',
                 EDate: '2019/04/10'
               },
@@ -324,7 +341,6 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
                 id:'8',
                 name:'File5',
                 type: 'dashboard',
-                fileNumber: '1',
                 editor: 'Ben',
                 EDate: '2019/04/10'
               }
@@ -371,6 +387,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
     this.mouseMove$ = fromEvent(document, 'mousemove')
 
     this.mouseClickSelect_subscribe();
+
     
   }
 
@@ -608,6 +625,8 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
 
     this.editing = !this.editing;
     
+    console.log(this.dataMapping)
+
   }
 
   check(id){

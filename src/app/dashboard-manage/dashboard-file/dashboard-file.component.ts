@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
+import { forbiddenNameValidator } from '../shared/duplicate-name.directive';
 
 @Component({
   selector: 'app-dashboard-file',
@@ -17,9 +18,9 @@ export class DashboardFileComponent implements OnInit, OnChanges {
 
   @Input('editing') editing: boolean;
 
-  fileNameFormControl = new FormControl('', [
-    Validators.required
-  ]);
+  @Input('currentLocationFiles') currentLocationFiles;
+
+  fileNameFormControl ;
 
   canEdit: boolean = false;
 
@@ -29,7 +30,10 @@ export class DashboardFileComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes:SimpleChanges): void {
-    //console.log(changes);
+    this.fileNameFormControl = new FormControl('', [
+      Validators.required,
+      forbiddenNameValidator(this.currentLocationFiles, this.fileName, 'dashboard')
+    ]);
   }
 
   edit(){
@@ -43,6 +47,8 @@ export class DashboardFileComponent implements OnInit, OnChanges {
       );
     }else{
       if(this.fileName.trim() == '')
+        return false;
+      if(this.fileNameFormControl.hasError('forbiddenNameValidator'))
         return false;
       /**
        * check if file name is duplicate or not

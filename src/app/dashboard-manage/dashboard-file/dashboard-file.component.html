@@ -19,8 +19,8 @@
     <button mat-button *ngIf="fileName" matSuffix mat-icon-button aria-label="Clear" (click)="fileName=''">
       <mat-icon>close</mat-icon>
     </button>
-    <mat-error *ngIf="fileNameFormControl.hasError('email') && !fileNameFormControl.hasError('required')">
-      Please enter a file name
+    <mat-error *ngIf="fileNameFormControl.hasError('forbiddenNameValidator') ">
+      Please enter a different name
     </mat-error>
     <mat-error *ngIf="fileNameFormControl.hasError('required')">
       File name is <strong>required</strong>

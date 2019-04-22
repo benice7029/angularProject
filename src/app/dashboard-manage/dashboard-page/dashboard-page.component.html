@@ -61,7 +61,7 @@
                         </i>
                     </button>
                     <div id="indiviualFeature" >
-                            <button title="Add" mat-icon-button [matMenuTriggerFor]="menu" [disabled] = "editing">
+                            <button title="Add" (click) = "addNewEle()" mat-icon-button [matMenuTriggerFor]="menu" [disabled] = "editing">
                                     <i class="material-icons" >
                                         add_box
                                     </i>
@@ -122,6 +122,9 @@
                         <button mat-button *ngIf="newFolder.value" matSuffix mat-icon-button aria-label="Clear" (click)="newFolder.value=''">
                         <mat-icon>close</mat-icon>
                         </button>
+                        <mat-error *ngIf="folderNameFormControl.hasError('forbiddenNameValidator') ">
+                            Please enter a different name
+                        </mat-error>
                         <mat-error *ngIf="folderNameFormControl.hasError('required')">
                             Folder name is <strong>required</strong>
                         </mat-error>
@@ -150,6 +153,9 @@
                         <button mat-button *ngIf="newFile.value" matSuffix mat-icon-button aria-label="Clear" (click)="newFile.value=''">
                         <mat-icon>close</mat-icon>
                         </button>
+                        <mat-error *ngIf="fileNameFormControl.hasError('forbiddenNameValidator') ">
+                            File {{newFile.value}} is existed
+                        </mat-error>
                         <mat-error *ngIf="fileNameFormControl.hasError('required')">
                             Dashboard name is <strong>required</strong>
                         </mat-error>
@@ -177,7 +183,7 @@
               Editor
           </div>
           <div class="column_name">
-              Modified  
+              Last Modified  
           </div>
           <div></div>
         </div>
@@ -225,8 +231,11 @@
               <ng-container *ngIf = "dataMapping[currentLocation].previous != ''">
                   <div [ngStyle] = "{'opacity':(editing? '0.5':'1')}" id = "previous" [attr.data-targetname] = "dataMapping[currentLocation].previous" class="folder unselected ">
                     <div [attr.data-targetId] = "'previous'" class="previous" ></div>
-                    <p [attr.data-targetId] = "'previous'" class="previous" (dblclick) = "editing ?false:changeFolder(dataMapping[currentLocation].previous)">
-                        <i class="far fa-folder-open"></i>../
+                    <p style="padding-left:28px;" [attr.data-targetId] = "'previous'" class="previous" (dblclick) = "editing ?false:changeFolder(dataMapping[currentLocation].previous)">
+                        <i class="material-icons">
+                            folder_open
+                        </i>
+                        ../
                     </p>
                     
                   </div>
@@ -261,12 +270,13 @@
                       [fileId] = "data.id" 
                       [fileName] = "data.name" 
                       [editing] = "editing"
+                      [currentLocationFiles] = "dataMapping[currentLocation].datas"
                       (preventMove) = "preventMoveing($event)">
                 </app-dashboard-file>
               </ng-container>
               <div [attr.data-targetId] = "data.id" [attr.data-targetname] = "data.name" style="text-align: center;">{{dataMapping[data.name] != undefined ? dataMapping[data.name].datas.length : '1'}}</div>
               <div [attr.data-targetId] = "data.id" [attr.data-targetname] = "data.name" style="text-align: center;">{{data.editor}}</div>
-              <div [attr.data-targetId] = "data.id" [attr.data-targetname] = "data.name" style="text-align: center;">{{data.EDate}}</div>
+              <div [attr.data-targetId] = "data.id" [attr.data-targetname] = "data.name" style="text-align: center;">{{data.EDate | date: 'longDate'}}</div>
               
               <div [attr.data-targetname] = "data.name">
                   <button [disabled] = "editing" class="btn">
