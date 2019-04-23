@@ -3,38 +3,49 @@
         DashBoard Manage
     </h1>
 
-    <!-- create another component for tabs dashboard component -->
-    <div class="locationPath" > 
-            <button [disabled] = "editing">
-                <i class="material-icons">
-                    home
-                </i>
-                <span [ngStyle] = "{ 'cursor': (editing ? 'not-allowed' : 'pointer') }" (click) = "editing ?false: changeFolder('Root')" >
-                    Root
-                </span>
-                
-            </button>
-            <ng-container *ngFor = "let current of currentLocationArray">
+    <div id="feature_1" style="display: grid; grid-template-columns: 80% 20%">
+        <!-- create another component for tabs dashboard component -->
+        <div class="locationPath" > 
                 <button [disabled] = "editing">
-                    <i class="material-icons" >
-                        arrow_forward_ios
+                    <i class="material-icons">
+                        home
                     </i>
-                </button>
-                <button [disabled] = "editing">
-                    <i class="material-icons" >
-                            folder
-                    </i>
-                    <span [ngStyle] = "{ 'cursor': (editing ? 'not-allowed' : 'pointer') }" (click) = "editing ?false:changeFolder(current)" >
-                        {{current}}
+                    <span [ngStyle] = "{ 'cursor': (editing ? 'not-allowed' : 'pointer') }" (click) = "editing ?false: changeFolder('Root')" >
+                        Root
                     </span>
                     
                 </button>
-            </ng-container>
-            
-            
-            
+                <ng-container *ngFor = "let current of currentLocationArray">
+                    <button [disabled] = "editing">
+                        <i class="material-icons" >
+                            arrow_forward_ios
+                        </i>
+                    </button>
+                    <button [disabled] = "editing">
+                        <i class="material-icons" >
+                                folder
+                        </i>
+                        <span [ngStyle] = "{ 'cursor': (editing ? 'not-allowed' : 'pointer') }" (click) = "editing ?false:changeFolder(current.id)" >
+                            {{current.name}}
+                        </span>
+                        
+                    </button>
+                </ng-container>
+                
+                
+                
 
+        </div>
+        <div id="autocomplete">
+                <input matInput placeholder="Searching">
+                <button>
+                    <i class="material-icons">
+                    search
+                    </i>
+                </button>
+        </div>
     </div>
+    
     <div class="btnGrp" >
             <div id="checkboxAll" >
                 <mat-checkbox [disabled] = "editing" color="warn" (change) = "checkAll()" [(ngModel)]="checked" >
@@ -72,20 +83,7 @@
                 
             </div>
             <div>
-                <form 
                 
-                [formGroup]="fileForm">
-                <mat-form-field >
-                    <input type="text" matInput placeholder="Searching..." formControlName="fileGroup"  [matAutocomplete]="autoGroup">
-                    <mat-autocomplete #autoGroup="matAutocomplete" >
-                        <mat-optgroup *ngFor="let group of fileGroupOptions | async" [label]="group.type">
-                        <mat-option [disabled] = "editing" (onSelectionChange)="selectLocation()" *ngFor="let file of group.files" [value]="file">
-                            {{file}}
-                        </mat-option>
-                    </mat-optgroup>
-                    </mat-autocomplete>
-                </mat-form-field>
-                </form>
             </div>
             
             <mat-menu   #menu="matMenu">
@@ -174,10 +172,10 @@
             
           </div>
           <div id="column_filename">
-              File Name
+              Name
           </div>
           <div class="column_name">
-              File Number
+              Type
           </div>
           <div class="column_name">
               Editor
@@ -229,7 +227,7 @@
           
           <ng-container *ngIf = "dataMapping">
               <ng-container *ngIf = "dataMapping[currentLocation].previous != ''">
-                  <div [ngStyle] = "{'opacity':(editing? '0.5':'1')}" id = "previous" [attr.data-targetname] = "dataMapping[currentLocation].previous" class="folder unselected ">
+                  <div [ngStyle] = "{'opacity':(editing? '0.5':'1')}" id = "previous" [attr.data-id] = "dataMapping[currentLocation].previous" [attr.data-targetname] = "dataMapping[dataMapping[currentLocation].previous].name" class="folder unselected ">
                     <div [attr.data-targetId] = "'previous'" class="previous" ></div>
                     <p style="padding-left:28px;" [attr.data-targetId] = "'previous'" class="previous" (dblclick) = "editing ?false:changeFolder(dataMapping[currentLocation].previous)">
                         <i class="material-icons">
@@ -262,7 +260,8 @@
                                 [editing] = "editing"
                                 [currentLocationFiles] = "dataMapping[currentLocation].datas"
                                 (preventMove) = "preventMoveing($event)"
-                                (changeFolder) = "changeFolder($event)" >
+                                (changeFolder) = "changeFolder($event)"
+                                title="Data number: {{dataMapping[data.id] != undefined ? dataMapping[data.id].datas.length : '1'}}" >
                 </app-dashboard-folder>
               </ng-container>
               <ng-container *ngSwitchCase = "'dashboard'">
@@ -274,13 +273,13 @@
                       (preventMove) = "preventMoveing($event)">
                 </app-dashboard-file>
               </ng-container>
-              <div [attr.data-targetId] = "data.id" [attr.data-targetname] = "data.name" style="text-align: center;">{{dataMapping[data.name] != undefined ? dataMapping[data.name].datas.length : '1'}}</div>
+              <div [attr.data-targetId] = "data.id" [attr.data-targetname] = "data.name" style="text-align: center;">{{data.type | uppercase}}</div>
               <div [attr.data-targetId] = "data.id" [attr.data-targetname] = "data.name" style="text-align: center;">{{data.editor}}</div>
               <div [attr.data-targetId] = "data.id" [attr.data-targetname] = "data.name" style="text-align: center;">{{data.EDate | date: 'longDate'}}</div>
               
               <div [attr.data-targetname] = "data.name">
                   <button [disabled] = "editing" class="btn">
-                      <i class="material-icons" (click) = "editing ?false:deleteElement(data.name,data.type)">
+                      <i class="material-icons" (click) = "editing ?false:deleteElement(data.id,data.type)">
                           delete_forever
                       </i>
                   </button>

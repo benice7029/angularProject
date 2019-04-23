@@ -5,6 +5,7 @@ import { fromEvent, zip, of, Observable, from } from 'rxjs';
 import { map, tap, takeUntil, bufferTime, filter, startWith, mergeAll, merge} from 'rxjs/operators';
 import { Validators, FormControl, FormBuilder, FormGroup } from '@angular/forms';
 import { forbiddenNameValidator } from '../shared/duplicate-name.directive';
+import { dbmModel } from '../shared/model/dbmModel';
 
 export interface FileType {
   type: string;
@@ -26,6 +27,7 @@ export const _filter = (opt: string[], value: string): string[] => {
 export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy {
   
 
+  switch = false;
   
 
   fileForm: FormGroup = this.fb.group({
@@ -69,17 +71,21 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
 
   selectedElementEvent$;
 
+  cancelRename$;
+
   selectedElements: Array<any>;
   
   targetFolder: string;
 
   targetFolderName: string;
 
+  totalData: Array<dbmModel>;
+
   dataMapping;// folder and dashboard data
 
   currentLocation:string;
 
-  currentLocationArray:Array<string>;//location path  
+  currentLocationArray:Array<{id:string,name:string}>;//location path  
 
   editing:boolean;
 
@@ -110,11 +116,11 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
 
     this.folderNameFormControl = new FormControl('', [
       Validators.required,
-      forbiddenNameValidator(this.dataMapping[this.currentLocation].datas, this.nfd.nativeElement.value, 'folder')
+      forbiddenNameValidator(this.dataMapping[this.currentLocation].datas, '', 'folder')
     ]);
     this.fileNameFormControl = new FormControl('', [
       Validators.required,
-      forbiddenNameValidator(this.dataMapping[this.currentLocation].datas, this.nfl.nativeElement.value, 'dashboard')
+      forbiddenNameValidator(this.dataMapping[this.currentLocation].datas, '', 'dashboard')
     ]);
   }
 
@@ -126,28 +132,31 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
      * should send request and get result from backend
      * for value of id
      */
-
+    let testId = this.id ++ + ''
     // if(this.folderName.trim() == '')
     //   return false;
     if(this.folderNameFormControl.hasError('forbiddenNameValidator'))
       return false;
 
-    if(this.fileNameFormControl.hasError('forbiddenNameValidator'))
+    if(this.fileNameFormControl.hasError('forbiddenNameValidator')){
+      console.log('same....')
       return false;
+    }
+      
 
     if(type == 'folder'){
-      this.dataMapping[newElement] = 
+      this.dataMapping[testId] = 
       {
+        name:newElement,
         previous:this.currentLocation,
         datas:[]
 
       }
       this.dataMapping[this.currentLocation]['datas']
       = [ {
-            id:this.id ++ + '',
+            id:testId,
             name:newElement,
             type: type,
-            fileNumber: type == 'folder' ? '0' : '1',
             editor: 'Ben',
             EDate: '2019/04/10'
           }
@@ -157,21 +166,21 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
       this.dataMapping[this.currentLocation]['datas']
       .push(
         {
-          id:this.id ++ + '',
+          id:testId + '',
           name:newElement,
           type: type,
-          fileNumber: type == 'folder' ? '0' : '1',
           editor: 'Ben',
           EDate: '2019/04/10'
         }
       )
     }
 
+    console.log(this.dataMapping)
     
     this.reCheckElement(this.currentLocation);
   }
 
-  deleteElement(element,type){
+  deleteElement(element,type){ // element: id
     if(this.selectedElements.length != 0){
       this.selectedElements = this.selectedElements.filter((value) => {
         if(value.name != element )
@@ -190,7 +199,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
 
     this.dataMapping[this.currentLocation]['datas']
     .forEach((el,ind) => {
-        if(element == el.name){
+        if(element == el.id){
           this.dataMapping[this.currentLocation]['datas']
           .splice(ind, 1)
 
@@ -203,7 +212,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
   deleteAllSelected(){
     if(this.selectedElements.length != 0){
       this.selectedElements.forEach((e) => {
-        this.deleteElement(e.name,e.type);
+        this.deleteElement(e.id,e.type);
       })
       this.clearCheck()
     }
@@ -258,9 +267,211 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
   
   */
 
+    // this.dataMapping = 
+    // {
+    //   Root:{
+    //     previous:'',
+    //     datas:[
+    //             {
+    //               id:'1',
+    //               name:'Folder1',
+    //               type: 'folder',
+    //               editor: 'Ben',
+    //               EDate: '2019/04/10'
+    //             },
+    //             {
+    //               id:'2',
+    //               name:'File1',
+    //               type: 'dashboard',
+    //               editor: 'Ben',
+    //               EDate: '2019/04/10'
+    //             },
+    //             {
+    //               id:'3',
+    //               name:'File2',
+    //               type: 'dashboard',
+    //               editor: 'Ben',
+    //               EDate: '2019/04/10'
+    //             },
+    //             {
+    //               id:'9',
+    //               name:'File98',
+    //               type: 'dashboard',
+    //               editor: 'Ben',
+    //               EDate: '2019/04/10'
+    //             },
+    //             {
+    //               id:'10',
+    //               name:'File14',
+    //               type: 'dashboard',
+    //               editor: 'Ben',
+    //               EDate: '2019/04/10'
+    //             },
+    //             {
+    //               id:'11',
+    //               name:'File233',
+    //               type: 'dashboard',
+    //               editor: 'Ben',
+    //               EDate: '2019/04/10'
+    //             }
+    //           ]
+    //   },
+    //   Folder1:{
+    //     previous:'Root',
+    //     datas:[{
+    //             id:'4',
+    //             name:'Folder2',
+    //             type: 'folder',
+    //             editor: 'Ben',
+    //             EDate: '2019/04/10'
+    //           },
+    //           {
+    //             id:'5',
+    //             name:'Folder3',
+    //             type: 'folder',
+    //             editor: 'Ben',
+    //             EDate: '2019/04/10'
+    //           },
+    //           {
+    //             id:'6',
+    //             name:'File3',
+    //             type: 'dashboard',
+    //             editor: 'Ben',
+    //             EDate: '2019/04/10'
+    //           },
+    //           {
+    //             id:'7',
+    //             name:'File4',
+    //             type: 'dashboard',
+    //             editor: 'Ben',
+    //             EDate: '2019/04/10'
+    //           },
+    //           {
+    //             id:'8',
+    //             name:'File5',
+    //             type: 'dashboard',
+    //             editor: 'Ben',
+    //             EDate: '2019/04/10'
+    //           }
+    //         ]
+    //   },
+    //   Folder2:{
+    //     previous:'Folder1',
+    //     datas:[]
+    //   },
+    //   Folder3:{
+    //     previous:'Folder1',
+    //     datas:[]
+    //   }
+
+    // }
+
+    this.totalData = [
+      {
+        id:'1',
+        name:'Folder1',
+        type: 'folder',
+        editor: 'Ben',
+        EDate: '2019/04/10',
+        Previous: 'Root',
+        Tennant: 'Tennant 1'
+      },
+      {
+        id:'2',
+        name:'File1',
+        type: 'dashboard',
+        editor: 'Ben',
+        EDate: '2019/04/10',
+        Previous: 'Root',
+        Tennant: 'Tennant 1'
+      },
+      {
+        id:'3',
+        name:'File2',
+        type: 'dashboard',
+        editor: 'Ben',
+        EDate: '2019/04/10',
+        Previous: 'Root',
+        Tennant: 'Tennant 1'
+      },
+      {
+        id:'9',
+        name:'File98',
+        type: 'dashboard',
+        editor: 'Ben',
+        EDate: '2019/04/10',
+        Previous: 'Root',
+        Tennant: 'Tennant 1'
+      },
+      {
+        id:'10',
+        name:'File14',
+        type: 'dashboard',
+        editor: 'Ben',
+        EDate: '2019/04/10',
+        Previous: 'Root',
+        Tennant: 'Tennant 1'
+      },
+      {
+        id:'11',
+        name:'File233',
+        type: 'dashboard',
+        editor: 'Ben',
+        EDate: '2019/04/10',
+        Previous: 'Root',
+        Tennant: 'Tennant 1'
+      },
+      {
+        id:'4',
+        name:'Folder2',
+        type: 'folder',
+        editor: 'Ben',
+        EDate: '2019/04/10',
+        Previous: '1',
+        Tennant: 'Tennant 1'
+      },
+      {
+        id:'5',
+        name:'Folder3',
+        type: 'folder',
+        editor: 'Ben',
+        EDate: '2019/04/10',
+        Previous: '1',
+        Tennant: 'Tennant 1'
+      },
+      {
+        id:'6',
+        name:'File3',
+        type: 'dashboard',
+        editor: 'Ben',
+        EDate: '2019/04/10',
+        Previous: '1',
+        Tennant: 'Tennant 1'
+      },
+      {
+        id:'7',
+        name:'File4',
+        type: 'dashboard',
+        editor: 'Ben',
+        EDate: '2019/04/10',
+        Previous: '1',
+        Tennant: 'Tennant 1'
+      },
+      {
+        id:'8',
+        name:'File5',
+        type: 'dashboard',
+        editor: 'Ben',
+        EDate: '2019/04/10',
+        Previous: '1',
+        Tennant: 'Tennant 1'
+      }
+    ]
+
     this.dataMapping = 
     {
       Root:{
+        name:'Root',
         previous:'',
         datas:[
                 {
@@ -307,7 +518,8 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
                 }
               ]
       },
-      Folder1:{
+      1:{
+        name:'Folder1',
         previous:'Root',
         datas:[{
                 id:'4',
@@ -346,12 +558,14 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
               }
             ]
       },
-      Folder2:{
-        previous:'Folder1',
+      4:{
+        name:'Folder2',
+        previous:'1',
         datas:[]
       },
-      Folder3:{
-        previous:'Folder1',
+      5:{
+        name:'Folder3',
+        previous:'1',
         datas:[]
       }
 
@@ -389,6 +603,8 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
     this.mouseClickSelect_subscribe();
 
     
+
+    
   }
 
   selectedObservable_subscribe(){
@@ -412,6 +628,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
                       this.targetFolderName = ele.getAttribute('data-targetname')
                     }else{
                       this.targetFolderName = '';
+                      this.targetFolder = undefined;
                     }
 
                   }else{
@@ -438,17 +655,17 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
                     if(ele.classList.contains('canStore')){
                       this.selectedElements.forEach((selected) => {
                         if(selected.type == 'folder'){
-                          this.dataMapping[selected.name].previous
-                          = ele.getAttribute('data-targetname');
+                          this.dataMapping[selected.id].previous
+                          = ele.getAttribute('data-id');
                         }
                         this.dataMapping[this.currentLocation]['datas'].forEach((deleteCheck,ind) => {
                           if(deleteCheck.id == selected.id){
 
                             if(selected.type == 'folder'){
-                              this.dataMapping[ele.getAttribute('data-targetname')]['datas']
-                              = [deleteCheck,...this.dataMapping[ele.getAttribute('data-targetname')]['datas']]
+                              this.dataMapping[ele.getAttribute('data-id')]['datas']
+                              = [deleteCheck,...this.dataMapping[ele.getAttribute('data-id')]['datas']]
                             }else{
-                              this.dataMapping[ele.getAttribute('data-targetname')]['datas']
+                              this.dataMapping[ele.getAttribute('data-id')]['datas']
                               .push(deleteCheck);
                             }
 
@@ -514,8 +731,8 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
     .subscribe((e) => {
       let ele = e.target as HTMLElement;
       if(ele.dataset.targetid != undefined && ele.className != 'previous'){
-        console.log(e)
-        console.log(`choose ${ele.dataset.targetid}`);
+        //console.log(e)
+        //console.log(`choose ${ele.dataset.targetid}`);
         this.checkBoxGroup[ele.dataset.targetid] = !this.checkBoxGroup[ele.dataset.targetid]
         this.check(ele.dataset.targetid);
       }
@@ -529,14 +746,41 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
 
-  changeFolder(foldername){
+  changeFolder(folderID){
     
+    let update = false;
 
-    if(foldername != 'Root'){
-      if(this.currentLocationArray.includes(foldername))
-        this.currentLocationArray = this.currentLocationArray.slice(0,this.currentLocationArray.indexOf(foldername) + 1);
-      else
-        this.currentLocationArray.push(foldername);
+    if(folderID != 'Root'){
+      if(this.currentLocationArray.length == 0){
+        this.currentLocationArray.push(
+          {
+            id:folderID,
+            name:this.dataMapping[folderID].name
+        });
+        update = true;
+      }else{
+
+        for(var i = 0 ; i < this.currentLocationArray.length ; i ++){
+          if(this.currentLocationArray[i].id == folderID){
+            this.currentLocationArray = this.currentLocationArray.slice(0,i );
+            break;
+            update = true;
+          }
+        }
+
+        if(!update){
+          this.currentLocationArray.push(
+            {
+              id:folderID,
+              name:this.dataMapping[folderID].name
+          });
+        }
+        
+      }
+
+      
+
+      
     }else
       this.currentLocationArray = new Array();
     
@@ -545,7 +789,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
     //re subscribe
     this.mouseClickSelect_subscribe();
     
-    this.reCheckElement(foldername);
+    this.reCheckElement(folderID);
 
     
     
@@ -571,43 +815,25 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
     //cancel selected 
     this.clearCheck();
 
+
     //when false, resubscribe observable
     if(this.editing){
+      
 
       /**
        * change dataMapping value
        */
+
+      //no need ?
       if(v.type == 'folder'){
-        if(this.dataMapping[v.name] == undefined){
-          this.dataMapping[this.currentLocation].datas.forEach(ele => {
-            if(ele.id == v.id){
-              this.dataMapping[v.name] = 
-              this.dataMapping[ele.name];
-              
-              for(let key in this.dataMapping){
-                console.log(key)
-                if(this.dataMapping[key].previous == ele.name)
-                  this.dataMapping[key].previous = v.name;
-              }
-              delete this.dataMapping[ele.name];
-              ele.name = v.name;
-              
-              
-            }
-          })
-        }
+        this.dataMapping[v.id].name = v.name;
         
-
-        
-
-
-
-      }else{
-        this.dataMapping[this.currentLocation].datas.forEach(ele => {
-          if(ele.id == v.id)
-            ele.name = v.name;
-        })
       }
+      this.dataMapping[this.currentLocation].datas.forEach(ele => {
+        if(ele.id == v.id)
+          ele.name = v.name;
+      })
+      //no need?
 
       this.reCheckElement(this.currentLocation);
       this.mouseClickSelect_subscribe();
@@ -690,11 +916,9 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
     this.selectedObservable_unsubscribe();
     this.mouseClickSelect_unsubscribe();
     this.checked = false;
-    console.log(this.checkBoxGroup)
     for(let k in this.checkBoxGroup){
       this.checkBoxGroup[k] = false;
     }
-    console.log(this.checkBoxGroup[1])
     //clear selected elements
     this.selectedElements = new Array();
     
@@ -703,6 +927,8 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
   selectLocation(){
     console.log('selected!!')
   }
+
+  
 
 
 }

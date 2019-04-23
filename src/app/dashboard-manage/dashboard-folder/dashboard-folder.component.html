@@ -1,12 +1,12 @@
 <!-- [attr.data-targetId] = "targetId" 
      It's a identification for moving file or folder to target folder   -->
 <p [ngStyle] = "{'opacity':(editing&&!canEdit? '0.5':'1')}" #f  >
-    <button title="Edit name" [disabled] = "editing"  
+    <button title="Edit name" [disabled] = "editing"  #editBtn
             *ngIf = "!canEdit" class="btn" (click) = "edit()">
         <i   class="material-icons">edit</i>
     </button>
-    <button title="Save"  *ngIf = "canEdit" class="btn" (click) = "edit()">
-      <i  class="material-icons">
+    <button title="Save"  *ngIf = "canEdit" class="btn" (click) = "edit()" data-type="save">
+      <i  class="material-icons" data-type="save">
         save
       </i>
     </button>
@@ -15,15 +15,17 @@
   </i>
   <span [attr.data-targetId] = "targetId" *ngIf = "!canEdit">{{folderName}}</span>
 
-  <mat-form-field *ngIf = "canEdit" class="example-full-width" 
+  <mat-form-field data-type="focus" *ngIf = "canEdit" class="example-full-width" 
     [style.padding] = "'0px 5px'" 
     [style.fontSize] = "'10px'"
     [style.width] = "'60%'">
     <input matInput placeholder="Folder Name" 
-    [(ngModel)] = "folderName" 
-    [formControl]="folderNameFormControl">
-    <button mat-button *ngIf="folderName" matSuffix mat-icon-button aria-label="Clear" (click)="folderName=''">
-      <mat-icon>close</mat-icon>
+    [value] = "folderName" 
+    [attr.data-originalVal] = "folderName"
+    data-type="focus"
+    [formControl]="folderNameFormControl" autofocus #folderInput>
+    <button data-type="focus" mat-button *ngIf="folderInput.value" matSuffix mat-icon-button aria-label="Clear" (click)="folderInput.value=''">
+      <mat-icon data-type="focus">close</mat-icon>
     </button>
     <mat-error *ngIf="folderNameFormControl.hasError('forbiddenNameValidator') ">
       Please enter a different name

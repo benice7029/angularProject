@@ -4,4 +4,6 @@ export class dbmModel {
     type: string;
     editor: string;
     EDate: string;
+    Previous: string;
+    Tennant: string;
 }

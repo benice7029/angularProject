@@ -1,5 +1,7 @@
 <p [ngStyle] = "{'opacity':(editing&&!canEdit? '0.5':'1')}">
-      <button title="Edit name" [disabled] = "editing"  *ngIf = "!canEdit" class="btn" (click) = "edit()">
+      <button title="Edit name" 
+      [disabled] = "editing"  
+      *ngIf = "!canEdit" class="btn" (click) = "edit()" #editBtn>
         <i class="material-icons">edit</i>
       </button>
       <button title="Save" *ngIf = "canEdit" class="btn" (click) = "edit()">
@@ -15,7 +17,11 @@
     [style.padding] = "'0px 5px'" 
     [style.fontSize] = "'10px'"
     [style.width] = "'60%'">
-    <input matInput placeholder="File Name" [(ngModel)] = "fileName" [formControl]="fileNameFormControl">
+    <input matInput placeholder="File Name" 
+    [(ngModel)] = "fileName" 
+    [formControl]="fileNameFormControl" 
+    autofocus
+    #fileInput>
     <button mat-button *ngIf="fileName" matSuffix mat-icon-button aria-label="Clear" (click)="fileName=''">
       <mat-icon>close</mat-icon>
     </button>

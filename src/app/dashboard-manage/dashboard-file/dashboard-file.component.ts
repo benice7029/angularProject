@@ -1,13 +1,15 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { forbiddenNameValidator } from '../shared/duplicate-name.directive';
+import { fromEvent } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard-file',
   templateUrl: './dashboard-file.component.html',
   styleUrls: ['./dashboard-file.component.scss']
 })
-export class DashboardFileComponent implements OnInit, OnChanges {
+export class DashboardFileComponent implements OnInit, OnChanges, AfterViewInit {
+  
   
 
   @Input('fileName') fileName:string;
@@ -24,20 +26,30 @@ export class DashboardFileComponent implements OnInit, OnChanges {
 
   canEdit: boolean = false;
 
+
+  @ViewChild('fileInput') fi: ElementRef;
+
+  @ViewChild('editBtn') editBtn: ElementRef;
+
   constructor() { }
 
   ngOnInit() {
   }
 
+  ngAfterViewInit(): void {
+    this.editBtnSub();
+  }
+
   ngOnChanges(changes:SimpleChanges): void {
-    this.fileNameFormControl = new FormControl('', [
-      Validators.required,
-      forbiddenNameValidator(this.currentLocationFiles, this.fileName, 'dashboard')
-    ]);
+    
   }
 
   edit(){
     if(!this.canEdit){
+      this.fileNameFormControl = new FormControl('', [
+        Validators.required,
+        forbiddenNameValidator(this.currentLocationFiles, this.fileId, 'dashboard')
+      ]);
       this.preventMove.emit(
         {
           id:this.fileId,
@@ -70,6 +82,33 @@ export class DashboardFileComponent implements OnInit, OnChanges {
     }
     
     this.canEdit = !this.canEdit;
+
+    if(!this.canEdit)
+      this.waitForNewElement();
+  }
+
+
+  waitForNewElement(){
+
+
+    if(this.editBtn == undefined){
+      let checkElement = setInterval(() => {
+        if(this.editBtn != undefined){
+          this.editBtnSub();
+          clearInterval(checkElement);
+        }
+      },100)
+    }
+
+  }
+
+  editBtnSub(){
+
+
+    fromEvent(this.editBtn.nativeElement, 'click')
+    .subscribe(() => {
+      this.fi.nativeElement.focus();
+    })
   }
 
 }

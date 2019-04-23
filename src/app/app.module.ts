@@ -13,6 +13,7 @@ import { DashboardModule } from './dashboard-manage/dashboard/dashboard.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SharedModule } from './shared/shared.module';
 import { DuplicateNameDirective } from './dashboard-manage/shared/duplicate-name.directive';
+import { DashboardSearchingComponent } from './dashboard-manage/dashboard-searching/dashboard-searching.component';
 
 
 @NgModule({
@@ -23,7 +24,8 @@ import { DuplicateNameDirective } from './dashboard-manage/shared/duplicate-name
     ColorfulDirective,
     BeautyStyleDirective,
     AboutComponent,
-    DuplicateNameDirective
+    DuplicateNameDirective,
+    DashboardSearchingComponent
   ],
   imports: [
     BrowserModule,

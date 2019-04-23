@@ -21,25 +21,50 @@
             }
         }
     }
-    .locationPath{
-        padding: 5px 4px;
+    #feature_1{
         border-top: 1px solid #d6d6d6;
         border-left: 1px solid #d6d6d6;
         border-right: 1px solid #d6d6d6;
-        //background-color: rgb(230, 230, 230);
-        button{
-            background-color:transparent;
-            border: none;
-            i{
-                font-size:15px
+        .locationPath{
+            padding: 5px 4px;
+            
+            //background-color: rgb(230, 230, 230);
+            button{
+                background-color:transparent;
+                border: none;
+                i{
+                    font-size:15px
+                }
+                span{
+                    vertical-align: top;
+                    border-bottom: 1px solid gray;
+                    cursor: pointer;
+                }
             }
-            span{
-                vertical-align: top;
-                border-bottom: 1px solid gray;
+        }
+        #autocomplete{
+            padding: 5px 4px;
+
+            button{
                 cursor: pointer;
+                font-size: 20px;
+                padding: 0;
+                background-color: transparent;
+                border: none;
+                i{
+                    font-size: 15px;
+                    padding: 0;
+                }
+            }
+
+            input{
+                width: 80%;
+                padding: 2px;
+                border-bottom:1px solid rgb(211, 211, 211)
             }
         }
     }
+    
 
 
     .btnGrp{
@@ -143,7 +168,7 @@
 
             
             .unselected{
-                font-size: 20px;
+                font-size: 16px;
                 padding: 5px 10px;
                 display: grid;
                 grid-template-columns: 30px 30% 15% 20% auto 34px 34px;
@@ -172,10 +197,13 @@
                         border-radius: 5px;
                         cursor: pointer;
                     }
+                    i{
+                        font-size: 20px;
+                    }
                 }
             }
             .selected{
-                font-size: 20px;
+                font-size: 16px;
                 padding: 5px 10px;
                 display: grid;
                 grid-template-columns: 30px 30% 15% 20% auto 34px 34px;
