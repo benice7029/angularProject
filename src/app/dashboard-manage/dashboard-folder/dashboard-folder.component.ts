@@ -95,13 +95,13 @@ export class DashboardFolderComponent implements OnInit, OnChanges, AfterViewIni
     .pipe(
       tap((e) => {
         let ele = e.target as HTMLElement
-        if(this.editing && ele.dataset.type != 'save')
+        if(this.canEdit && ele.dataset.type != 'save')
           console.log('cancel');
         
       }),
       filter(e => {
         let ele = e.target as HTMLElement
-        if(this.editing && ele.dataset.type != 'save' && ele.dataset.type != 'focus')
+        if(this.canEdit && ele.dataset.type != 'save' && ele.dataset.type != 'focus')
             return true;
         else
             return false;
@@ -113,8 +113,6 @@ export class DashboardFolderComponent implements OnInit, OnChanges, AfterViewIni
       //return to original value
       this.fi.nativeElement.value = this.folderName;
       this.edit();
-      // if(this.editing)
-      //   this.editing = !this.editing;
     })
 
   }

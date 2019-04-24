@@ -23,7 +23,7 @@
     [value] = "folderName" 
     [attr.data-originalVal] = "folderName"
     data-type="focus"
-    [formControl]="folderNameFormControl" autofocus #folderInput>
+    [formControl]="folderNameFormControl" [autofocus] = "canEdit" #folderInput>
     <button data-type="focus" mat-button *ngIf="folderInput.value" matSuffix mat-icon-button aria-label="Clear" (click)="folderInput.value=''">
       <mat-icon data-type="focus">close</mat-icon>
     </button>

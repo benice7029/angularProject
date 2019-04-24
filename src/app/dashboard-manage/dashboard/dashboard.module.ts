@@ -4,15 +4,26 @@ import { DashboardPageComponent } from '../dashboard-page/dashboard-page.compone
 import { DashboardFileComponent } from '../dashboard-file/dashboard-file.component';
 import { DashboardFolderComponent } from '../dashboard-folder/dashboard-folder.component';
 import { SharedModule } from 'src/app/shared/shared.module';
+import { DashboardManagingComponent } from '../dashboard-managing/dashboard-managing.component';
+import { DashboardSearchingComponent } from '../dashboard-searching/dashboard-searching.component';
+import { TypeFilterPipe } from '../shared/customPipe/type-filter.pipe';
+import { DynamicDashboardManageDirective } from '../shared/directives/dynamic-dashboard-manage.directive';
 
 @NgModule({
   declarations: [
     DashboardPageComponent,
     DashboardFileComponent,
-    DashboardFolderComponent
+    DashboardFolderComponent,
+    DashboardManagingComponent,
+    DashboardSearchingComponent,TypeFilterPipe,DynamicDashboardManageDirective
   ],
-  exports: [DashboardPageComponent],
-  entryComponents: [DashboardFolderComponent,DashboardFileComponent],
+  providers:[TypeFilterPipe],
+  exports: [DashboardPageComponent,TypeFilterPipe,DynamicDashboardManageDirective],
+  entryComponents: [
+    DashboardFolderComponent,
+    DashboardFileComponent,
+    DashboardManagingComponent,
+    DashboardSearchingComponent],
   imports: [
     CommonModule,
     SharedModule

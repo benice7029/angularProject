@@ -1,3 +1,38 @@
-<p>
-  dashboard-searching works!
-</p>
+<div *ngIf = "!finished" style="    padding: 100px 0;margin: auto;
+width: 100px;">
+
+  <mat-progress-spinner
+        class="example-margin"
+        [color]="'primary'"
+        [mode]="'indeterminate'"
+        [value]="'10'">
+  </mat-progress-spinner>
+  <div style="text-align: center;
+  padding: 10px 0;">Searching...</div>
+</div>
+
+
+<mat-list *ngIf = "finished" style="    height: 80vh;
+overflow-y: scroll;" id="list">
+  <h3 mat-subheader>Folders</h3>
+  <mat-list-item *ngFor="let d of totalData | typeFilter: 'folder'" style=" cursor: pointer;">
+    <mat-icon mat-list-icon>{{d.type}}</mat-icon>
+    <h4 mat-line>{{d.name}}</h4>
+    <p mat-line>
+      
+      <span style="color:#929292">{{d.location }}</span>
+      <span style="float:right"> <span style="color:#929292">Date Modified: </span> {{d.EDate | date}}</span>
+    </p>
+  </mat-list-item>
+  <mat-divider></mat-divider>
+  <h3 mat-subheader>Dashboards</h3>
+  <mat-list-item *ngFor="let d of totalData | typeFilter: 'dashboard'">
+    <mat-icon mat-list-icon>{{d.type}}</mat-icon>
+    <h4 mat-line>{{d.name}}</h4>
+    <p mat-line>
+      
+      <span style="color:#929292">{{d.location }}</span>
+      <span style="float:right"> <span style="color:#929292">Date Modified: </span> {{d.EDate | date}}</span>
+    </p>
+  </mat-list-item>
+</mat-list>

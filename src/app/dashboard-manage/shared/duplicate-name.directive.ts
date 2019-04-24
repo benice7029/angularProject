@@ -1,6 +1,5 @@
 import { Directive, Input } from '@angular/core';
 import { AbstractControl, ValidatorFn, NG_VALIDATORS } from '@angular/forms';
-import { FileType } from '../dashboard-page/dashboard-page.component';
 
 export function forbiddenNameValidator(currentLocationFiles: Array<any>, currenId: string, type: string): ValidatorFn {
   return (control: AbstractControl): {[key: string]: any} | null => {
