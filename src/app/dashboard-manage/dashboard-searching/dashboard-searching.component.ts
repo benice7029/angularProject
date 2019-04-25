@@ -1,13 +1,17 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard-searching',
   templateUrl: './dashboard-searching.component.html',
   styleUrls: ['./dashboard-searching.component.scss']
 })
-export class DashboardSearchingComponent implements OnInit {
+export class DashboardSearchingComponent implements OnInit, OnChanges {
+  
 
   @Output() searchFinish = new EventEmitter();
+
+  @Input('searchingValue') searchingValue: string; 
 
   mode: string;
 
@@ -15,7 +19,17 @@ export class DashboardSearchingComponent implements OnInit {
 
   finished: boolean = false;
 
-  constructor() { }
+  constructor(private router: Router ) { }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    console.log(changes)
+    this.finished = false;
+    setTimeout(() => {
+      this.finished = true;
+      this.searchFinish.emit('determinate')
+    },3000)
+    
+  }
 
   ngOnInit() {
     this.mode = 'indeterminate'
@@ -138,6 +152,16 @@ export class DashboardSearchingComponent implements OnInit {
         location: 'Root\\Folder1'
       }
     ]
+  }
+
+  changeFolder(id){
+    this.router.navigate(
+      ['dashboardManage', 
+        { 
+          feature: 'manage', 
+          location: id
+        }
+    ]);
   }
 
 }

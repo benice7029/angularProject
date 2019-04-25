@@ -2,7 +2,7 @@ import { Component, OnInit,  AfterViewInit, QueryList, ViewChildren, OnDestroy, 
 import { DashboardFolderComponent } from '../dashboard-folder/dashboard-folder.component';
 import { DashboardFileComponent } from '../dashboard-file/dashboard-file.component';
 import { fromEvent, zip, of, Observable, from } from 'rxjs';
-import { map, tap, takeUntil, bufferTime, filter, startWith, mergeAll, merge} from 'rxjs/operators';
+import { map, tap, takeUntil, bufferTime, filter, startWith, mergeAll, merge, debounceTime} from 'rxjs/operators';
 import { Validators, FormControl, FormBuilder, FormGroup } from '@angular/forms';
 import { forbiddenNameValidator } from '../shared/duplicate-name.directive';
 import { dbmModel } from '../shared/model/dbmModel';
@@ -26,6 +26,9 @@ export const _filter = (opt: string[], value: string): string[] => {
 })
 export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy {
   
+  searching$;
+
+  @ViewChild('searching') searchingInput:ElementRef
 
   routerChange$;
 
@@ -33,7 +36,12 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
 
   // @ViewChild(DynamicDashboardManageDirective) dynamicComponentLoader: DynamicDashboardManageDirective;
 
-   private _chooseFeature = 'manage';
+  private _chooseFeature = 'manage';
+
+  searchingValue: string
+
+  searchingValue_child: string;
+  
 
   // get chooseFeature(){
   //   console.log('s')
@@ -69,7 +77,12 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
     this.route.params.subscribe(p => {
       this._chooseFeature = p.feature;
       if(this._chooseFeature == 'manage' && p.location != undefined){
+        this.searchingValue = '';
+        this.searchingValue_child = '';
         this.changeFolder(p.location);
+      }else{
+        this.searchingValue = p.lastSearchWord
+        this.searchingValue_child = p.lastSearchWord;
       }
     });
 
@@ -112,26 +125,43 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
   ngAfterViewInit(): void {
     //this.setDynamicComponent();
     
+
+    this.searching$ = 
+    fromEvent(this.searchingInput.nativeElement, 'input')
+    .pipe(
+      tap(()=>this.mode = 'indeterminate'),
+      debounceTime(1000),
+      map((e: any) => e.target.value)
+    )
+    .subscribe((value) => {
+      this.mode = 'determinate'
+      this.searchingValue = value;
+      this.searchingValue_child = value;
+      this.onSearchChange(value);
+    })
+
+
   }
 
-  onSearchChange(searchingValue){
-    if(searchingValue == ''){
-      // this.router.navigate(
-      //   ['dashboardManage', 
-      //     { 
-      //       feature: 'manage', 
-      //       location: this.currentLocationArray != undefined && this.currentLocationArray.length > 0 
-      //                 ? this.currentLocationArray[this.currentLocationArray.length -1].id
-      //                 : 'Root'
-      //     }
-      //   ]);
+  onSearchChange(searchingVal){
+    if(searchingVal == ''){
+      this.router.navigate(
+        ['dashboardManage', 
+          { 
+            feature: 'manage', 
+            location: this.currentLocationArray != undefined && this.currentLocationArray.length > 0 
+                      ? this.currentLocationArray[this.currentLocationArray.length -1].id
+                      : 'Root'
+          }
+        ]);
     }else{
       this.router.navigate(
         ['dashboardManage', 
           { feature: 'search', 
             location: this.currentLocationArray != undefined && this.currentLocationArray.length > 0 
                       ? this.currentLocationArray[this.currentLocationArray.length -1].id
-                      : 'Root'
+                      : 'Root',
+            lastSearchWord: searchingVal
           }
         ]
       );

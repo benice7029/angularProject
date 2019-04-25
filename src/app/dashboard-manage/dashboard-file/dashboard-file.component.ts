@@ -68,7 +68,9 @@ export class DashboardFileComponent implements OnInit, OnChanges, AfterViewInit 
 
       /**
        * Http remind!
-       * should send request here for updating folder name
+       * should send request here for updating dashboard name
+       * and send response of updated datamapping to parent component
+       * for updating datamapping
        */
 
 

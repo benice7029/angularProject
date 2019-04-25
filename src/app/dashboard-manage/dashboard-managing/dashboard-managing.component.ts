@@ -1,10 +1,16 @@
-import { Component, OnInit,  AfterViewInit, QueryList, ViewChildren, OnDestroy, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit,  AfterViewInit, QueryList, ViewChildren, OnDestroy, ViewChild, ElementRef, Output, EventEmitter, Inject } from '@angular/core';
 import { fromEvent} from 'rxjs';
 import { map, tap, takeUntil} from 'rxjs/operators';
 import { Validators, FormControl } from '@angular/forms';
 import { forbiddenNameValidator } from '../shared/duplicate-name.directive';
 import { dbmModel } from '../shared/model/dbmModel';
 import { Router } from '@angular/router';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+
+export interface DialogData {
+  id: string;
+  name: string;
+}
 
 @Component({
   selector: 'app-dashboard-managing',
@@ -147,10 +153,10 @@ export class DashboardManagingComponent implements OnInit, AfterViewInit, OnDest
     this.reCheckElement(this.currentLocation);
   }
 
-  deleteElement(element,type){ // element: id
+  deleteElement(id,name,type){ // element: id
     if(this.selectedElements.length != 0){
       this.selectedElements = this.selectedElements.filter((value) => {
-        if(value.name != element )
+        if(value.id != id )
           return true;
       })
     }
@@ -160,13 +166,13 @@ export class DashboardManagingComponent implements OnInit, AfterViewInit, OnDest
      */
 
     if(type == 'folder'){
-      delete this.dataMapping[element];
+      delete this.dataMapping[id];
     }
     
 
     this.dataMapping[this.currentLocation]['datas']
     .forEach((el,ind) => {
-        if(element == el.id){
+        if(id == el.id){
           this.dataMapping[this.currentLocation]['datas']
           .splice(ind, 1)
 
@@ -179,14 +185,14 @@ export class DashboardManagingComponent implements OnInit, AfterViewInit, OnDest
   deleteAllSelected(){
     if(this.selectedElements.length != 0){
       this.selectedElements.forEach((e) => {
-        this.deleteElement(e.id,e.type);
+        this.deleteElement(e.id,e.name,e.type);
       })
       this.clearCheck()
     }
   }
 
 
-  constructor( private router: Router ) { }
+  constructor( private router: Router, public dialog: MatDialog ) { }
 
   ngOnDestroy(): void {
     /**
@@ -517,6 +523,12 @@ export class DashboardManagingComponent implements OnInit, AfterViewInit, OnDest
                   /**
                    * below are updating the data structure
                    * 
+                   * If target folder is not undefined and 
+                   * selected elements are not empty, it means some of datas moved 
+                   * to target folder. 
+                   * 
+                   * need to send http request to backend 
+                   * for updating datas
                    */
                   let ele = document.getElementById(this.targetFolder);
                   if(ele != undefined){
@@ -547,10 +559,7 @@ export class DashboardManagingComponent implements OnInit, AfterViewInit, OnDest
                       this.clearCheck();
                       //re subscribe
                       this.mouseClickSelect_subscribe();
-                      
-                      /**
-                       * need to send http request to backend 
-                       * for updating datas */
+                     
 
                     }
                   }
@@ -629,6 +638,16 @@ export class DashboardManagingComponent implements OnInit, AfterViewInit, OnDest
         }
     ]);
 
+    /**
+     * The following code is to build the
+     * data structure of currentLocationArray
+     * 
+     * replace the following code to http get
+     * the currentLocationArray should come from back-end
+     * 
+     * ----------------start
+     */
+
     let update = false;
 
     if(folderID != 'Root'){
@@ -665,13 +684,19 @@ export class DashboardManagingComponent implements OnInit, AfterViewInit, OnDest
       this.currentLocationArray = new Array();
 
     this.updatePath.emit(this.currentLocationArray);
+
+    /**
+     * ----------------------------------------end
+     */
+
+    this.reCheckElement(folderID);
     
     this.clearCheck();
 
     //re subscribe
     this.mouseClickSelect_subscribe();
     
-    this.reCheckElement(folderID);
+    
 
     
     
@@ -679,6 +704,10 @@ export class DashboardManagingComponent implements OnInit, AfterViewInit, OnDest
   }
 
   reCheckElement(folderid){
+
+    /**
+     * make a http request for update dataMapping
+     */
 
     if(this.dataMapping[folderid] != undefined){
       this.currentLocation = folderid;
@@ -798,12 +827,94 @@ export class DashboardManagingComponent implements OnInit, AfterViewInit, OnDest
     this.selectedObservable_unsubscribe();
     this.mouseClickSelect_unsubscribe();
     this.checked = false;
+
+    /**
+     * Should change the following 'for loop' to refresh the value of
+     * checkBoxGroup because datamapping will change
+     * 
+     * 
+     * 
+     *  this.checkBoxGroup = {};
+        for(let k in this.dataMapping){
+          this.dataMapping[k].datas.forEach((value) => {
+            this.checkBoxGroup[value.id] = false;
+          })
+          
+        }
+     */
+
     for(let k in this.checkBoxGroup){
       this.checkBoxGroup[k] = false;
     }
     //clear selected elements
     this.selectedElements = new Array();
     
+  }
+
+
+
+  openDialog(id,name,type): void {
+    const dialogRef = this.dialog.open(DeleteDialog, {
+      width: '500px',
+      data: {id: id, name: name, type: type}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if(result == undefined)
+        console.log('You cancel the delete');
+      else
+        this.deleteElement(result.id,result.name,result.type);
+      console.log('The dialog was closed');
+      //this.deleteElement(result.id,result.name,result.type);
+    });
+  }
+
+  openDeleteAllDialog(): void {
+    const dialogRef = this.dialog.open(DeleteAllDialog, {
+      width: '500px'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('delete all: '+result)
+      if(result == undefined )
+        console.log('You cancel the delete');
+      else
+        this.deleteAllSelected();
+      console.log('The dialog was closed');
+      //this.deleteElement(result.id,result.name,result.type);
+    });
+  }
+
+}
+
+
+@Component({
+  selector: 'delete-dialog',
+  templateUrl: 'delete-dialog.html',
+})
+export class DeleteDialog {
+
+  constructor(
+    public dialogRef: MatDialogRef<DeleteDialog>,
+    @Inject(MAT_DIALOG_DATA) public data: DialogData) {}
+
+  onNoClick(): void {
+    this.dialogRef.close();
+  }
+
+}
+
+@Component({
+  selector: 'delete-all-dialog',
+  templateUrl: 'delete-all-dialog.html',
+})
+export class DeleteAllDialog {
+
+  constructor(
+    public dialogRef: MatDialogRef<DeleteDialog>) {}
+
+  onNoClick(): void {
+    this.dialogRef.close();
   }
 
 }

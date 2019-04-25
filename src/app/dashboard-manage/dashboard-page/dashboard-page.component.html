@@ -3,7 +3,7 @@
 
     <div id="feature_1" style="display: grid; grid-template-columns: 80% 20%">
         <!-- create another component for tabs dashboard component -->
-        <div *ngIf="searching.value == ''" class="locationPath" > 
+        <div *ngIf="searchingValue == ''" class="locationPath" > 
                 <button [disabled] = "editing">
                     <i class="material-icons">
                         home
@@ -37,9 +37,9 @@
                 
 
         </div>
-        <div *ngIf="searching.value != ''">
+        <div *ngIf="searchingValue != ''">
             <p style="    margin: 0;
-            margin-bottom: 5px;">Search for <span style="font-weight: bold;">{{searching.value}}</span> </p>
+            margin-bottom: 5px;">Search for "<span style="font-weight: bold;">{{searching.value}}</span>" in 「Root\Folder1」 </p>
             <section class="example-section">
                 <mat-progress-bar
                     class="example-margin"
@@ -51,7 +51,7 @@
             </section>
         </div>
         <div id="autocomplete">
-                <input matInput placeholder="Searching" #searching (input) = "onSearchChange(searching.value)">
+                <input matInput placeholder="Searching" #searching [(ngModel)] = "searchingValue" >
                 <button>
                     <i class="material-icons">
                     search
@@ -65,29 +65,14 @@
     <app-dashboard-managing *ngIf="_chooseFeature == 'manage'" (updatePath) = "pathArray($event)"></app-dashboard-managing>
 
   
-    <app-dashboard-searching *ngIf="_chooseFeature == 'search'" (searchFinish) = "searchFinish($event)"></app-dashboard-searching>
+    <app-dashboard-searching 
+    *ngIf="_chooseFeature == 'search'" 
+    (searchFinish) = "searchFinish($event)"
+    [searchingValue] = "searchingValue_child">
+    </app-dashboard-searching>
   
   
   
   
 </div>
 
-<ng-template #Folder >
-    <app-dashboard-folder [attr.data-targetId]  = "data.id" 
-                      [targetId] = "data.id" 
-                      [folderName] = "data.name" 
-                      [folderId] = "data.id" 
-                      [editing] = "editing"
-                      (preventMove) = "preventMoveing($event)"
-                      (changeFolder) = "changeFolder($event)" >
-    </app-dashboard-folder>
-</ng-template>
-
-<ng-template #Dashboard >
-    <app-dashboard-file 
-                      [fileId] = "data.id" 
-                      [fileName] = "data.name" 
-                      [editing] = "editing"
-                      (preventMove) = "preventMoveing($event)">
-    </app-dashboard-file>
-</ng-template>

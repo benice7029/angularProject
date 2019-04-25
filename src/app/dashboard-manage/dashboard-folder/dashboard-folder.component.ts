@@ -144,6 +144,8 @@ export class DashboardFolderComponent implements OnInit, OnChanges, AfterViewIni
       /**
        * Http remind!
        * should send request here for updating folder name
+       * and send response of updated datamapping to parent component
+       * for updating datamapping
        */
 
       
