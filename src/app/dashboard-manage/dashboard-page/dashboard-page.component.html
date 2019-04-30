@@ -1,78 +1,80 @@
-<div #container class="container" >
-    
+<div #container class="container">
+
 
     <div id="feature_1" style="display: grid; grid-template-columns: 80% 20%">
         <!-- create another component for tabs dashboard component -->
-        <div *ngIf="searchingValue == ''" class="locationPath" > 
-                <button [disabled] = "editing">
-                    <i class="material-icons">
-                        home
-                    </i>
-                    <span [ngStyle] = "{ 'cursor': (editing ? 'not-allowed' : 'pointer') }" (click) = "changeFolder('Root')" >
-                        Root
-                    </span>
-                    
-                </button>
-                <ng-container *ngIf = "currentLocationArray">
-                    <ng-container *ngFor = "let current of currentLocationArray">
-                        <button [disabled] = "editing">
-                            <i class="material-icons" >
-                                arrow_forward_ios
-                            </i>
-                        </button>
-                        <button [disabled] = "editing">
-                            <i class="material-icons" >
-                                    folder
-                            </i>
-                            <span [ngStyle] = "{ 'cursor': (editing ? 'not-allowed' : 'pointer') }" (click) = "changeFolder(current.id)" >
-                                {{current.name}}
-                            </span>
-                            
-                        </button>
-                    </ng-container>
+        <div *ngIf="searchingValue == ''" class="locationPath">
+            <button [disabled]="editing">
+                <i class="material-icons">
+                    home
+                </i>
+                <span [ngStyle]="{ 'cursor': (editing ? 'not-allowed' : 'pointer') }" (click)="changeFolder('0')">
+                    Root
+                </span>
+
+            </button>
+            <ng-container *ngIf="currentLocationArray">
+                <ng-container *ngFor="let current of currentLocationArray">
+                    <button [disabled]="editing">
+                        <i class="material-icons">
+                            arrow_forward_ios
+                        </i>
+                    </button>
+                    <button [disabled]="editing">
+                        <i class="material-icons">
+                            folder
+                        </i>
+                        <span [ngStyle]="{ 'cursor': (editing ? 'not-allowed' : 'pointer') }"
+                            (click)="changeFolder(current.id)">
+                            {{current.name}}
+                        </span>
+
+                    </button>
                 </ng-container>
-                
-                
-                
-                
+            </ng-container>
+
+
+
+
 
         </div>
         <div *ngIf="searchingValue != ''">
             <p style="    margin: 0;
-            margin-bottom: 5px;">Search for "<span style="font-weight: bold;">{{searching.value}}</span>" in 「Root\Folder1」 </p>
+            margin-bottom: 5px;">Search for "<span style="font-weight: bold;">{{searching.value}}</span>" in
+                <span>「Root</span>
+                <ng-container *ngFor="let current of currentLocationArray">
+                    <span>\{{current.name}}</span>
+                </ng-container>
+                <span>」</span>
+            </p>
             <section class="example-section">
-                <mat-progress-bar
-                    class="example-margin"
-                    [color]="'primary'"
-                    [mode]="mode"
-                    [value]="'100'"
+                <mat-progress-bar class="example-margin" [color]="'primary'" [mode]="mode" [value]="'100'"
                     [bufferValue]="'100'">
                 </mat-progress-bar>
             </section>
         </div>
         <div id="autocomplete">
-                <input matInput placeholder="Searching" #searching [(ngModel)] = "searchingValue" >
-                <button>
-                    <i class="material-icons">
+            <input matInput placeholder="Searching" #searching [(ngModel)]="searchingValue">
+            <button>
+                <i class="material-icons">
                     search
-                    </i>
-                </button>
+                </i>
+            </button>
         </div>
     </div>
 
     <!-- <ng-container appDynamicDashboardManage></ng-container> -->
-    
-    <app-dashboard-managing *ngIf="_chooseFeature == 'manage'" (updatePath) = "pathArray($event)"></app-dashboard-managing>
 
-  
-    <app-dashboard-searching 
-    *ngIf="_chooseFeature == 'search'" 
-    (searchFinish) = "searchFinish($event)"
-    [searchingValue] = "searchingValue_child">
+    <!-- <app-dashboard-managing *ngIf="_chooseFeature == 'manage'" (updatePath) = "pathArray($event)"></app-dashboard-managing> -->
+
+    <app-dashboard-management *ngIf="_chooseFeature == 'manage'" [currentLocation]="currentLocation"
+        (updatePath)="pathArray($event)"></app-dashboard-management>
+
+    <app-dashboard-searching *ngIf="_chooseFeature == 'search'" (searchFinish)="searchFinish($event)"
+        [searchingValue]="searchingValue_child">
     </app-dashboard-searching>
-  
-  
-  
-  
-</div>
 
+
+
+
+</div>

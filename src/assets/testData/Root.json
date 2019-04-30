@@ -1,0 +1,43 @@
+{
+    "path":[],
+    "datas":{
+        "name":"Root",
+          "previous":"",
+          "datas":[
+               
+              {
+                  "id":"1",
+                  "name":"Folder1",
+                  "type": "folder",
+                  "editor": "Ben",
+                  "lastModified": "2019/04/10"
+              },
+              {
+                "id":"2",
+                "name":"Folder77",
+                "type": "folder",
+                "editor": "Ben",
+                "lastModified": "2019/04/01"
+                },{
+                    "id":"3",
+                    "name":"dashboard3e",
+                    "type": "dashboard",
+                    "editor": "Ben",
+                    "lastModified": "2019/04/15"
+                },{
+                    "id":"15",
+                    "name":"dashboard3w",
+                    "type": "dashboard",
+                    "editor": "Ben",
+                    "lastModified": "2019/04/11"
+                },{
+                    "id":"12",
+                    "name":"dashboard3q",
+                    "type": "dashboard",
+                    "editor": "Ben",
+                    "lastModified": "2019/04/09"
+                }
+            ]
+    
+      }
+}

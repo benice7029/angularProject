@@ -1,0 +1,40 @@
+<h1 mat-dialog-title>Add new element</h1>
+<div mat-dialog-content>
+  <mat-form-field style="width: 50% ;">
+    <mat-label>Please select type</mat-label>
+    <mat-select [(ngModel)]="newData.type">
+      <mat-select-trigger>
+        <mat-icon>{{newData.type}}</mat-icon>
+        <span style="    vertical-align: super;
+                      padding: 10px 5px;
+                      margin-top: 5px;">
+          {{newData.type}}
+        </span>
+      </mat-select-trigger>
+      <mat-option *ngFor="let t of type" [value]="t">
+        <mat-icon>{{t}}</mat-icon>
+        <span>{{t}} </span>
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <br>
+  <mat-form-field style="width: 50%;">
+    <mat-label>Please select location</mat-label>
+    <mat-select [(ngModel)]="newData.previous">
+      <mat-option *ngFor="let folder of folders" [value]="folder.id">
+        {{folder.name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+</div>
+<p>Please enter your element's name</p>
+<mat-form-field style="width: 100%">
+  <input matInput autofocus [(ngModel)]="newData.name">
+</mat-form-field>
+<p style="color: red; font-size: 12px;">*WARNING: Element name can contain only letters and numbers</p>
+<div mat-dialog-actions style="float: right;">
+  <button mat-button (click)="onYesClick()">Build</button>
+  <button mat-button (click)="onNoClick()">Cancel</button>
+
+</div>

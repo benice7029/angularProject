@@ -1,0 +1,57 @@
+{
+    "path":[{"id":"1","name":"Folder1"}],
+    "datas":{
+        "name":"Folder1",
+          "previous":"Root",
+          "datas":[
+                {
+                    "id":"Root",
+                    "name":"../",
+                    "type": "previous",
+                    "editor": "",
+                    "lastModified": ""
+                },
+              {
+                  "id":"4",
+                  "name":"Folder2",
+                  "type": "folder",
+                  "editor": "Ben",
+                  "lastModified": "2019/04/10"
+              },
+              {
+                "id":"5",
+                "name":"Folder3",
+                "type": "folder",
+                "editor": "Ben",
+                "lastModified": "2019/04/10"
+                },{
+                    "id":"6",
+                    "name":"Folder4",
+                    "type": "folder",
+                    "editor": "Ben",
+                    "lastModified": "2019/04/10"
+                },
+                {
+                "id":"7",
+                "name":"dashboard1",
+                "type": "dashboard",
+                "editor": "Ben",
+                "lastModified": "2019/04/10"
+                },{
+                    "id":"8",
+                    "name":"dashboard2",
+                    "type": "dashboard",
+                    "editor": "Ben",
+                    "lastModified": "2019/04/10"
+                },
+                {
+                "id":"9",
+                "name":"dashboard3",
+                "type": "dashboard",
+                "editor": "Ben",
+                "lastModified": "2019/04/10"
+                }
+            ]
+    
+      }
+}

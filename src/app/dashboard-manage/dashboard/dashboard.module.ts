@@ -8,6 +8,10 @@ import { DashboardManagingComponent, DeleteDialog, DeleteAllDialog } from '../da
 import { DashboardSearchingComponent } from '../dashboard-searching/dashboard-searching.component';
 import { TypeFilterPipe } from '../shared/customPipe/type-filter.pipe';
 import { DynamicDashboardManageDirective } from '../shared/directives/dynamic-dashboard-manage.directive';
+import { DashboardManagementComponent } from '../dashboard-management/dashboard-management.component';
+import { CheckedPipePipe } from '../shared/customPipe/checked-pipe.pipe';
+import { DashboardManageAddDialogComponent, SuccessComponent } from '../dashboard-manage-add-dialog/dashboard-manage-add-dialog.component';
+import { DashboardManageDeleteDialogComponent } from '../dashboard-manage-delete-dialog/dashboard-manage-delete-dialog.component';
 
 @NgModule({
   declarations: [
@@ -17,19 +21,34 @@ import { DynamicDashboardManageDirective } from '../shared/directives/dynamic-da
     DashboardManagingComponent,
     DashboardSearchingComponent,
     TypeFilterPipe,
+    CheckedPipePipe,
     DynamicDashboardManageDirective,
     DeleteDialog,
-    DeleteAllDialog
+    DeleteAllDialog,
+    DashboardManagementComponent,
+    DashboardManageAddDialogComponent,
+    DashboardManageDeleteDialogComponent,
+    SuccessComponent
   ],
-  providers:[TypeFilterPipe],
-  exports: [DashboardPageComponent,TypeFilterPipe,DynamicDashboardManageDirective],
+  providers:[TypeFilterPipe, CheckedPipePipe],
+  exports: [
+    DashboardPageComponent,
+    TypeFilterPipe,
+    CheckedPipePipe,
+    DynamicDashboardManageDirective,
+    SuccessComponent],
   entryComponents: [
     DashboardFolderComponent,
     DashboardFileComponent,
     DashboardManagingComponent,
     DashboardSearchingComponent,
     DeleteDialog,
-    DeleteAllDialog],
+    DeleteAllDialog,
+    DashboardManagementComponent,
+    DashboardManageAddDialogComponent,
+    DashboardManageDeleteDialogComponent,
+    SuccessComponent
+  ],
   imports: [
     CommonModule,
     SharedModule

@@ -1,0 +1,51 @@
+.container{
+    
+    user-select: none;
+    -webkit-user-drag: auto;
+    .example-container {
+        height: 400px;
+        overflow: auto;
+        &::-webkit-scrollbar-track
+        {
+            background-color: white;
+        }
+        &::-webkit-scrollbar
+        {
+            width: 6px;
+            background-color: white;
+        }
+        &::-webkit-scrollbar-thumb
+        {
+            background-color: gray;
+        }
+        table {
+            width: 100%;
+        }
+    }
+    
+
+    #selectedArea{
+        position: absolute;
+        div{
+            position: relative;
+
+            p{
+                position: absolute;
+                margin: 0;
+                background-color: #eeeeee;
+                padding: 10px 20px;
+                border: 1px solid gray;
+                width: 100px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                filter: drop-shadow(1px 3px 4px rgba(0, 0, 0, 0.7));
+                border-radius: 5px;
+            }
+            
+        }
+         
+    }
+}
+
+
+  

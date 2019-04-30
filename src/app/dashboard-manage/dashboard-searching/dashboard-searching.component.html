@@ -15,13 +15,13 @@ width: 100px;">
 <mat-list *ngIf = "finished" style="    height: 80vh;
 overflow-y: scroll;" id="list">
   <h3 mat-subheader>Folders</h3>
-  <mat-list-item (click) = "changeFolder(d.id)" *ngFor="let d of totalData | typeFilter: 'folder'" style=" cursor: pointer;">
+  <mat-list-item (dblclick) = "changeFolder(d.id)" *ngFor="let d of totalData | typeFilter: 'folder'" style=" cursor: pointer;">
     <mat-icon mat-list-icon>{{d.type}}</mat-icon>
     <h4 mat-line>{{d.name}}</h4>
     <p mat-line>
       
-      <span style="color:#929292">{{d.location }}</span>
-      <span style="float:right"> <span style="color:#929292">Date Modified: </span> {{d.EDate | date}}</span>
+      <!-- <span style="color:#929292">{{d.location }}</span> -->
+      <span style="float:right"> <span style="color:#929292">Date Modified: </span> {{d.lastModified | date}}</span>
     </p>
   </mat-list-item>
   <mat-divider></mat-divider>
@@ -31,8 +31,8 @@ overflow-y: scroll;" id="list">
     <h4 mat-line>{{d.name}}</h4>
     <p mat-line>
       
-      <span style="color:#929292">{{d.location }}</span>
-      <span style="float:right"> <span style="color:#929292">Date Modified: </span> {{d.EDate | date}}</span>
+      <!-- <span style="color:#929292">{{d.location }}</span> -->
+      <span style="float:right"> <span style="color:#929292">Date Modified: </span> {{d.lastModified | date}}</span>
     </p>
   </mat-list-item>
 </mat-list>

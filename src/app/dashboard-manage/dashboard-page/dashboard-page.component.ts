@@ -10,6 +10,7 @@ import { DashboardManagingComponent } from '../dashboard-managing/dashboard-mana
 import { ActivatedRoute, Router } from '@angular/router';
 import { DynamicDashboardManageDirective } from '../shared/directives/dynamic-dashboard-manage.directive';
 import { DashboardSearchingComponent } from '../dashboard-searching/dashboard-searching.component';
+import { DashboardManagementComponent } from '../dashboard-management/dashboard-management.component';
 
 
 
@@ -41,6 +42,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
   searchingValue: string
 
   searchingValue_child: string;
+
   
 
   // get chooseFeature(){
@@ -62,9 +64,11 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
 
   @ViewChild(DashboardManagingComponent) manage: DashboardManagingComponent
 
+  @ViewChild(DashboardManagementComponent) manageMent: DashboardManagementComponent;
+
   mode: string;
   
-  
+  currentLocation: string = '0';
 
   currentLocationArray:Array<{id:string,name:string}>;//location path  
 
@@ -77,9 +81,10 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
     this.route.params.subscribe(p => {
       this._chooseFeature = p.feature;
       if(this._chooseFeature == 'manage' && p.location != undefined){
+        this.currentLocation = p.location;
+
         this.searchingValue = '';
         this.searchingValue_child = '';
-        this.changeFolder(p.location);
       }else{
         this.searchingValue = p.lastSearchWord
         this.searchingValue_child = p.lastSearchWord;
@@ -101,8 +106,10 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
       
   }
 
-  changeFolder(destination){
+  changeFolder(destination) {
     
+    this.manageMent.getDashBoardManagementData(destination);
+
     let waitElement = setInterval(() => {
       if(this.manage != undefined){
         // this.router.navigate(
@@ -138,29 +145,31 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
       this.searchingValue = value;
       this.searchingValue_child = value;
       this.onSearchChange(value);
-    })
+    }) ;
 
 
   }
 
-  onSearchChange(searchingVal){
-    if(searchingVal == ''){
+  onSearchChange(searchingVal) {
+    if (searchingVal == '') {
       this.router.navigate(
         ['dashboardManage', 
           { 
             feature: 'manage', 
             location: this.currentLocationArray != undefined && this.currentLocationArray.length > 0 
                       ? this.currentLocationArray[this.currentLocationArray.length -1].id
-                      : 'Root'
+                      : 0
           }
         ]);
-    }else{
+    }
+    else {
+      console.log('search')
       this.router.navigate(
         ['dashboardManage', 
           { feature: 'search', 
             location: this.currentLocationArray != undefined && this.currentLocationArray.length > 0 
                       ? this.currentLocationArray[this.currentLocationArray.length -1].id
-                      : 'Root',
+                      : 0,
             lastSearchWord: searchingVal
           }
         ]
@@ -175,6 +184,7 @@ export class DashboardPageComponent implements OnInit, AfterViewInit, OnDestroy 
    */
 
   pathArray(e){
+    console.log(e)
     this.currentLocationArray = e;
   }
   

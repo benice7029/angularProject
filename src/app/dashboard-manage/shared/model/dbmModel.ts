@@ -1,9 +1,9 @@
 export class dbmModel {
-    id:string
+    id:number
     name:string;
     type: string;
     editor: string;
-    EDate: string;
-    Previous: string;
-    Tennant: string;
+    lastModified: string;
+    previous: string;
+    tennant: string;
 }

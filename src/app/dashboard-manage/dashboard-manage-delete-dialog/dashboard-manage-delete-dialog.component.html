@@ -1,0 +1,36 @@
+<h1 mat-dialog-title>Are you sure you want to delete them ?</h1>
+<div mat-dialog-content>
+
+
+
+  <mat-list>
+
+    <ng-container *ngIf="deleteFolders.length != 0">
+      <span style="color: red;font-size: 12px;">*WARNING: All of dashboards and folders in these folders will be deleted
+        immediately</span>
+      <h3 mat-subheader>Folders</h3>
+      <mat-list-item *ngFor="let f of deleteFolders">
+        <mat-icon mat-list-icon>folder</mat-icon>
+        <h4 mat-line>{{f.name}}</h4>
+        <p mat-line> {{f.lastModified | date: longDate}} </p>
+      </mat-list-item>
+    </ng-container>
+
+    <mat-divider></mat-divider>
+
+    <ng-container *ngIf="deleteDashboards.length != 0">
+      <h3 mat-subheader>Dashboards</h3>
+      <mat-list-item *ngFor="let d of deleteDashboards">
+        <mat-icon mat-list-icon>dashboard</mat-icon>
+        <h4 mat-line>{{d.name}}</h4>
+        <p mat-line> {{d.lastModified | date: longDate}} </p>
+      </mat-list-item>
+    </ng-container>
+  </mat-list>
+
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click) = "onYesClick()" cdkFocusInitial>Yes</button>
+  <button mat-button (click) = "onNoClick()">No Thanks</button>
+
+</div>

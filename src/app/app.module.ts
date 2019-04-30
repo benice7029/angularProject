@@ -13,7 +13,7 @@ import { DashboardModule } from './dashboard-manage/dashboard/dashboard.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SharedModule } from './shared/shared.module';
 import { DuplicateNameDirective } from './dashboard-manage/shared/duplicate-name.directive';
-
+import { HttpClientModule } from '@angular/common/http';
 @NgModule({
   declarations: [
     AppComponent,
@@ -30,9 +30,10 @@ import { DuplicateNameDirective } from './dashboard-manage/shared/duplicate-name
     FormsModule,
     DashboardModule,
     BrowserAnimationsModule,
-    SharedModule
+    SharedModule,
+    HttpClientModule
   ],
-  providers: [SharedServiceService],
+  providers: [HttpClientModule,SharedServiceService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
